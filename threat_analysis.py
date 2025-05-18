@@ -289,7 +289,7 @@ def show_threat_analysis():
     """)
     
     # Create tabs for different input methods
-    upload_tab, sample_tab = st.tabs(["Upload Threat Report", "Use Sample Report"])
+    upload_tab, web_tab, sample_tab = st.tabs(["Upload Threat Report", "Web Scraping", "Use Sample Report"])
     
     with upload_tab:
         uploaded_file = st.file_uploader("Upload a JSON or PDF threat report", type=["json", "pdf"])
@@ -310,6 +310,50 @@ def show_threat_analysis():
                 if result:
                     st.success(f"Successfully processed {file_extension.upper()} report")
                     show_extraction_results(result)
+    
+    with web_tab:
+        st.subheader("Extract Threat Intelligence from Websites")
+        st.markdown("""
+        Enter a URL of a threat intelligence blog, security advisory, or similar website to extract
+        indicators of compromise (IOCs) and MITRE ATT&CK techniques.
+        """)
+        
+        url = st.text_input("Enter website URL", placeholder="https://example.com/threat-report")
+        
+        if st.button("Extract Intelligence from Website"):
+            if url:
+                with st.spinner("Extracting intelligence from website..."):
+                    try:
+                        # Import here to avoid circular imports
+                        from web_scraper import get_website_text_content
+                        
+                        # Get website content
+                        content = get_website_text_content(url)
+                        
+                        if content:
+                            # Extract IOCs and TTPs
+                            nlp = load_nlp_model()
+                            iocs = extract_iocs_from_text(content, nlp)
+                            ttps = extract_ttps_from_text(content)
+                            
+                            # Create result
+                            result = {
+                                "report_type": "web",
+                                "source_url": url,
+                                "extraction_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                "extracted_iocs": iocs,
+                                "extracted_ttps": ttps,
+                                "text_content": content[:1000] + "..." if len(content) > 1000 else content
+                            }
+                            
+                            st.success(f"Successfully extracted intelligence from {url}")
+                            show_extraction_results(result)
+                        else:
+                            st.error("Failed to extract content from the website. Try a different URL.")
+                    except Exception as e:
+                        st.error(f"Error processing website: {str(e)}")
+            else:
+                st.warning("Please enter a valid URL.")
     
     with sample_tab:
         st.info("Using a sample threat report for demonstration purposes")
