@@ -59,6 +59,43 @@ def init_db():
     )
     ''')
     
+    # Create threat intel feeds table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS threat_intel_feeds (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        description TEXT,
+        source TEXT NOT NULL,
+        feed_type TEXT NOT NULL,
+        created_at TIMESTAMP NOT NULL,
+        created_by TEXT NOT NULL,
+        last_updated TIMESTAMP,
+        is_active BOOLEAN DEFAULT 1
+    )
+    ''')
+    
+    # Create threat intel items table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS threat_intel_items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        feed_id INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT,
+        ioc_type TEXT NOT NULL,
+        ioc_value TEXT NOT NULL,
+        severity TEXT NOT NULL,
+        confidence TEXT NOT NULL,
+        first_seen TIMESTAMP,
+        last_seen TIMESTAMP,
+        added_at TIMESTAMP NOT NULL,
+        added_by TEXT NOT NULL,
+        tags TEXT,
+        reference_url TEXT,
+        FOREIGN KEY (feed_id) REFERENCES threat_intel_feeds (id) ON DELETE CASCADE,
+        UNIQUE(feed_id, ioc_type, ioc_value)
+    )
+    ''')
+    
     # Insert default users if they don't exist
     cursor.execute("SELECT COUNT(*) FROM users")
     user_count = cursor.fetchone()[0]

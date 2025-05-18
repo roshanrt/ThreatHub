@@ -444,7 +444,9 @@ def show_threat_intel_management():
                         def format_item(item_id):
                             matching_rows = items_df[items_df['ID'] == item_id]
                             if len(matching_rows) > 0:
-                                return f"{matching_rows['Type'].values[0]}: {matching_rows['Value'].values[0]}"
+                                item_type = matching_rows['Type'].iloc[0] if len(matching_rows) > 0 else ""
+                                item_value = matching_rows['Value'].iloc[0] if len(matching_rows) > 0 else ""
+                                return f"{item_type}: {item_value}"
                             return f"Item {item_id}"
                         
                         item_to_delete = st.selectbox(
