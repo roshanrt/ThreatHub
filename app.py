@@ -11,6 +11,8 @@ from threat_analysis import show_threat_analysis
 from rule_generation import show_rule_generation
 from report_generation import show_report_generation
 from mitre_attack import show_mitre_attack
+from live_detection import show_live_detection
+from soc_copilot import show_soc_copilot
 from database import init_db
 
 # Page configuration
@@ -48,7 +50,9 @@ else:
         "Dashboard": "📊",
         "MITRE ATT&CK Intelligence": "🎯",
         "Threat Analysis": "🔍",
+        "Live TTP Detection": "🚨",
         "Security Rule Generation": "⚙️",
+        "SOC Copilot": "🤖",
         "Report Generation": "📄"
     }
     
@@ -78,8 +82,12 @@ else:
         show_mitre_attack()
     elif st.session_state.active_page == "Threat Analysis":
         show_threat_analysis()
+    elif st.session_state.active_page == "Live TTP Detection":
+        show_live_detection()
     elif st.session_state.active_page == "Security Rule Generation":
         show_rule_generation()
+    elif st.session_state.active_page == "SOC Copilot":
+        show_soc_copilot()
     elif st.session_state.active_page == "Report Generation":
         show_report_generation()
 
