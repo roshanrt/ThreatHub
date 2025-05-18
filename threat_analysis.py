@@ -9,6 +9,7 @@ import PyPDF2
 import spacy
 import plotly.express as px
 import plotly.graph_objects as go
+from web_scraper import process_website_content, save_website_report
 
 # Load NLP model for entity extraction
 @st.cache_resource
