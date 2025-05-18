@@ -46,34 +46,48 @@ else:
     st.sidebar.subheader(f"Welcome, {st.session_state.username}")
     st.sidebar.caption(f"Role: {st.session_state.role}")
     
-    # Navigation
-    pages = {
-        "Dashboard": "📊",
-        "MITRE ATT&CK Intelligence": "🎯",
-        "Threat Analysis": "🔍",
-        "Threat Intel Feed": "🔔",
-        "Live TTP Detection": "🚨",
-        "Security Rule Generation": "⚙️",
-        "SOC Copilot": "🤖",
-        "Report Generation": "📄"
+    # Navigation with categories
+    st.sidebar.header("Navigation")
+    
+    # Define navigation categories
+    categories = {
+        "Overview": {
+            "Dashboard": "📊"
+        },
+        "Intelligence": {
+            "MITRE ATT&CK Intelligence": "🎯",
+            "Threat Intel Feed": "🔔"
+        },
+        "Analysis": {
+            "Threat Analysis": "🔍",
+            "Live TTP Detection": "🚨",
+            "SOC Copilot": "🤖"
+        },
+        "Output": {
+            "Security Rule Generation": "⚙️",
+            "Report Generation": "📄"
+        }
     }
     
-    # Add admin-only pages
+    # Add admin category if user is admin
     if is_admin():
-        pages["Threat Intel Management"] = "🔄"
+        categories["Management"] = {
+            "Threat Intel Management": "🔄"
+        }
     
     # Only show admin options to admin users
     if not is_admin() and st.session_state.active_page == "User Management":
         st.session_state.active_page = "Dashboard"
     
-    st.sidebar.header("Navigation")
-    
-    for page_name, page_icon in pages.items():
-        if st.sidebar.button(f"{page_icon} {page_name}", key=page_name, 
-                             use_container_width=True,
-                             help=f"Navigate to {page_name}"):
-            st.session_state.active_page = page_name
-            st.rerun()
+    # Display navigation by category
+    for category, pages in categories.items():
+        st.sidebar.subheader(category)
+        for page_name, page_icon in pages.items():
+            if st.sidebar.button(f"{page_icon} {page_name}", key=page_name, 
+                                use_container_width=True,
+                                help=f"Navigate to {page_name}"):
+                st.session_state.active_page = page_name
+                st.rerun()
     
     # Logout button
     st.sidebar.markdown("---")
