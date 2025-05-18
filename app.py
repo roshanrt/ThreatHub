@@ -13,6 +13,7 @@ from report_generation import show_report_generation
 from mitre_attack import show_mitre_attack
 from live_detection import show_live_detection
 from soc_copilot import show_soc_copilot
+from threat_intel_feed import show_threat_intel_feed, show_threat_intel_management
 from database import init_db
 
 # Page configuration
@@ -50,11 +51,16 @@ else:
         "Dashboard": "📊",
         "MITRE ATT&CK Intelligence": "🎯",
         "Threat Analysis": "🔍",
+        "Threat Intel Feed": "🔔",
         "Live TTP Detection": "🚨",
         "Security Rule Generation": "⚙️",
         "SOC Copilot": "🤖",
         "Report Generation": "📄"
     }
+    
+    # Add admin-only pages
+    if is_admin():
+        pages["Threat Intel Management"] = "🔄"
     
     # Only show admin options to admin users
     if not is_admin() and st.session_state.active_page == "User Management":
@@ -82,6 +88,10 @@ else:
         show_mitre_attack()
     elif st.session_state.active_page == "Threat Analysis":
         show_threat_analysis()
+    elif st.session_state.active_page == "Threat Intel Feed":
+        show_threat_intel_feed()
+    elif st.session_state.active_page == "Threat Intel Management":
+        show_threat_intel_management()
     elif st.session_state.active_page == "Live TTP Detection":
         show_live_detection()
     elif st.session_state.active_page == "Security Rule Generation":
