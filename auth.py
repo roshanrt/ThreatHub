@@ -88,52 +88,77 @@ def authenticate_user(username, password):
 
 def login():
     """Display login form and handle login logic"""
-    st.title("🛡️ CyberShield Security Platform")
+    st.title("🛡️ CyberShield Enterprise Security Platform")
     
     col1, col2 = st.columns([1, 1])
     
     with col1:
-        st.header("Login")
-        username = st.text_input("Username", key="login_username")
-        password = st.text_input("Password", type="password", key="login_password")
+        st.header("Secure Login")
         
-        if st.button("Login", use_container_width=True):
-            if username and password:
-                success, role = authenticate_user(username, password)
-                if success:
-                    st.session_state.authenticated = True
-                    st.session_state.username = username
-                    st.session_state.role = role
-                    st.success("Login successful!")
-                    st.rerun()
+        # Styled login box
+        with st.container():
+            st.markdown("""
+            <style>
+            .login-box {
+                background-color: #f8f9fa;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            </style>
+            """, unsafe_allow_html=True)
+            
+            with st.container():
+                st.markdown('<div class="login-box">', unsafe_allow_html=True)
+                username = st.text_input("Username", key="login_username")
+                password = st.text_input("Password", type="password", key="login_password")
+                st.markdown('</div>', unsafe_allow_html=True)
+            
+            if st.button("Sign In", use_container_width=True):
+                if username and password:
+                    success, role = authenticate_user(username, password)
+                    if success:
+                        st.session_state.authenticated = True
+                        st.session_state.username = username
+                        st.session_state.role = role
+                        st.success("Authentication successful")
+                        st.rerun()
+                    else:
+                        st.error("Invalid credentials")
                 else:
-                    st.error("Invalid username or password")
-            else:
-                st.warning("Please enter both username and password")
+                    st.warning("Please enter your credentials")
     
     with col2:
-        st.header("About CyberShield")
+        st.header("Enterprise Security Suite")
         st.markdown("""
-        **CyberShield Security Intelligence Platform** provides comprehensive 
-        cybersecurity capabilities:
+        <style>
+        .feature-list {
+            margin-top: 20px;
+        }
+        .feature-item {
+            margin-bottom: 12px;
+        }
+        </style>
         
-        - 🎯 MITRE ATT&CK Intelligence
-        - 🔍 Advanced Threat Analysis
-        - ⚙️ Automated Security Rule Generation
-        - 📊 Interactive Security Dashboards
-        - 📄 Security Report Generation
+        <div class="feature-list">
+        <p><strong>CyberShield</strong> delivers comprehensive security intelligence for modern enterprises:</p>
         
-        Login with your credentials to access the platform.
-        """)
+        <div class="feature-item">🔒 <strong>Threat Intelligence:</strong> Real-time insights with MITRE ATT&CK framework integration</div>
+        <div class="feature-item">🔍 <strong>Threat Analysis:</strong> Advanced detection of indicators of compromise</div>
+        <div class="feature-item">🔄 <strong>STIX/TAXII Integration:</strong> Standardized threat intelligence sharing</div>
+        <div class="feature-item">⚙️ <strong>Security Rules:</strong> Automated generation for SIEM and EDR platforms</div>
+        <div class="feature-item">📊 <strong>Executive Dashboards:</strong> Comprehensive security posture visualization</div>
+        </div>
+        """, unsafe_allow_html=True)
         
-        # Demo credentials for first-time users
-        with st.expander("Demo Credentials"):
+        # Account credentials
+        with st.expander("Demo Access"):
             st.info("""
-            **Admin User:**
+            **Administrator Account**
             - Username: admin
             - Password: admin123
             
-            **Analyst User:**
+            **Security Analyst Account**
             - Username: analyst
             - Password: analyst123
             """)

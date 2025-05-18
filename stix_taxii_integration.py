@@ -673,12 +673,31 @@ def export_to_stix_bundle(intel_items, collection_name):
                 if indicator:
                     stix_objects.append(indicator)
         
-        # Create bundle
+        # Create bundle using a direct approach instead of relying on utils.gen_uuid()
         if stix_objects:
-            bundle = stix2.Bundle(objects=stix_objects)
-            return bundle.serialize(pretty=True)
+            try:
+                bundle = stix2.Bundle(objects=stix_objects)
+                return bundle.serialize(pretty=True)
+            except Exception as e:
+                # Fallback if bundle creation fails
+                import uuid
+                bundle_id = f"bundle--{str(uuid.uuid4())}"
+                return json.dumps({
+                    "type": "bundle", 
+                    "id": bundle_id, 
+                    "objects": [obj.serialize() for obj in stix_objects],
+                    "spec_version": "2.1"
+                }, indent=4)
         else:
-            return json.dumps({"type": "bundle", "id": f"bundle--{stix2.utils.gen_uuid()}", "objects": []})
+            # Empty bundle with proper structure
+            import uuid
+            bundle_id = f"bundle--{str(uuid.uuid4())}"
+            return json.dumps({
+                "type": "bundle", 
+                "id": bundle_id, 
+                "objects": [],
+                "spec_version": "2.1"
+            }, indent=4)
             
     except Exception as e:
         st.error(f"Error exporting to STIX bundle: {str(e)}")
@@ -788,12 +807,13 @@ def show_stix_taxii_integration():
     st.title("STIX/TAXII Integration")
     
     st.markdown("""
-    This module allows you to integrate with external threat intelligence sources using the STIX and TAXII standards. 
-    You can import threat intelligence from TAXII servers and export your threat intelligence in STIX format.
+    ## Enterprise Threat Intelligence Exchange
     
-    [STIX (Structured Threat Information Expression)](https://oasis-open.github.io/cti-documentation/stix/intro.html) is a standardized language for describing cyber threat intelligence.
+    Connect with external threat intelligence sources and share security data using standardized formats:
     
-    [TAXII (Trusted Automated Exchange of Intelligence Information)](https://oasis-open.github.io/cti-documentation/taxii/intro.html) is the transport mechanism for sharing STIX data.
+    - **Import** CTI from TAXII servers into your threat intelligence feeds
+    - **Export** your intelligence as standardized STIX bundles
+    - **Share** indicators with your security ecosystem
     """)
     
     # Create tabs for different functions

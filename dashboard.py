@@ -50,9 +50,14 @@ def load_sample_data():
 
 def show_dashboard():
     """Display the main security dashboard"""
-    st.title("📊 Security Intelligence Dashboard")
+    st.title("📊 Enterprise Security Dashboard")
     
-    # Load sample data
+    st.markdown("""
+    ### Real-time Security Intelligence Overview
+    Monitor your organization's security posture with actionable threat intelligence.
+    """)
+    
+    # Load telemetry data
     df = load_sample_data()
     
     # Summary metrics

@@ -19,7 +19,7 @@ from database import init_db
 
 # Page configuration
 st.set_page_config(
-    page_title="CyberShield - Security Intelligence Platform",
+    page_title="CyberShield - Enterprise Security Intelligence Platform",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded"
