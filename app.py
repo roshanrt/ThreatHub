@@ -14,6 +14,7 @@ from mitre_attack import show_mitre_attack
 from live_detection import show_live_detection
 from soc_copilot import show_soc_copilot
 from threat_intel_feed import show_threat_intel_feed, show_threat_intel_management
+from stix_taxii_integration import show_stix_taxii_integration
 from database import init_db
 
 # Page configuration
@@ -56,7 +57,8 @@ else:
         },
         "Intelligence": {
             "MITRE ATT&CK Intelligence": "🎯",
-            "Threat Intel Feed": "🔔"
+            "Threat Intel Feed": "🔔",
+            "STIX/TAXII Integration": "🔄"
         },
         "Analysis": {
             "Threat Analysis": "🔍",
@@ -104,6 +106,8 @@ else:
         show_threat_analysis()
     elif st.session_state.active_page == "Threat Intel Feed":
         show_threat_intel_feed()
+    elif st.session_state.active_page == "STIX/TAXII Integration":
+        show_stix_taxii_integration()
     elif st.session_state.active_page == "Threat Intel Management":
         show_threat_intel_management()
     elif st.session_state.active_page == "Live TTP Detection":
