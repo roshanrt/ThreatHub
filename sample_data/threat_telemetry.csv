@@ -1,0 +1,31 @@
+date,threat_actor,industry,technique_id,technique_name,success,detected,blocked
+2023-07-01,APT29,Government,T1566.001,Spearphishing Attachment,True,True,False
+2023-07-02,APT28,Government,T1190,Exploit Public-Facing Application,True,True,True
+2023-07-03,FIN7,Financial,T1110.004,Credential Stuffing,True,True,False
+2023-07-04,Lazarus Group,Financial,T1078,Valid Accounts,True,False,False
+2023-07-05,Carbanak,Financial,T1567.002,Exfiltration to Cloud Storage,True,True,True
+2023-07-06,APT41,Technology,T1133,External Remote Services,True,True,False
+2023-07-07,Silence Group,Financial,T1566,Phishing,True,True,True
+2023-07-08,APT29,Government,T1566.002,Spearphishing Link,False,True,True
+2023-07-09,APT28,Energy,T1046,Network Service Scanning,True,True,False
+2023-07-10,FIN7,Retail,T1190,Exploit Public-Facing Application,True,False,False
+2023-07-11,Lazarus Group,Technology,T1110,Brute Force,False,True,True
+2023-07-12,Carbanak,Financial,T1567,Exfiltration Over Web Service,True,True,False
+2023-07-13,APT41,Healthcare,T1566.001,Spearphishing Attachment,True,True,True
+2023-07-14,Silence Group,Financial,T1110.004,Credential Stuffing,False,True,True
+2023-07-15,APT29,Government,T1078,Valid Accounts,True,False,False
+2023-07-16,APT28,Technology,T1566,Phishing,True,True,True
+2023-07-17,FIN7,Financial,T1133,External Remote Services,True,True,False
+2023-07-18,Lazarus Group,Energy,T1567.002,Exfiltration to Cloud Storage,True,False,False
+2023-07-19,Carbanak,Retail,T1046,Network Service Scanning,False,True,True
+2023-07-20,APT41,Government,T1190,Exploit Public-Facing Application,True,True,False
+2023-07-21,Silence Group,Financial,T1566.001,Spearphishing Attachment,True,True,True
+2023-07-22,APT29,Healthcare,T1110,Brute Force,False,True,True
+2023-07-23,APT28,Financial,T1566.002,Spearphishing Link,True,False,False
+2023-07-24,FIN7,Financial,T1078,Valid Accounts,True,True,True
+2023-07-25,Lazarus Group,Government,T1567,Exfiltration Over Web Service,True,True,False
+2023-07-26,Carbanak,Technology,T1110.004,Credential Stuffing,False,False,False
+2023-07-27,APT41,Financial,T1566,Phishing,True,True,True
+2023-07-28,Silence Group,Energy,T1133,External Remote Services,True,True,False
+2023-07-29,APT29,Retail,T1190,Exploit Public-Facing Application,True,False,False
+2023-07-30,APT28,Healthcare,T1567.002,Exfiltration to Cloud Storage,False,True,True
