@@ -275,11 +275,11 @@ def generate_sample_threat_feed():
         cursor.execute("DELETE FROM threat_intel_items WHERE feed_id IN (SELECT id FROM threat_intel_feeds WHERE source = 'Sample Data')")
         cursor.execute("DELETE FROM threat_intel_feeds WHERE source = 'Sample Data'")
         conn.commit()
-    
+
     # Create sample feeds
     feed_types = ["IP Blocklist", "Malware Indicators", "APT Campaigns", "Phishing URLs"]
     sample_feeds = []
-    
+
     for feed_type in feed_types:
         feed_id = create_feed(
             title=f"Sample {feed_type}",
@@ -289,85 +289,59 @@ def generate_sample_threat_feed():
             username="system"
         )
         sample_feeds.append((feed_id, feed_type))
-    
+
     # Add sample IOCs for each feed
     for feed_id, feed_type in sample_feeds:
         if feed_type == "IP Blocklist":
-            for i in range(10):
+            for i in range(5):
                 add_intel_item(
                     feed_id=feed_id,
                     title=f"Malicious IP {i+1}",
-                    description=f"IP address associated with {['botnet activity', 'scanning', 'brute force attempts', 'C2 server'][i % 4]}",
+                    description=f"IP address associated with malicious activity {i+1}",
                     ioc_type="ip",
-                    ioc_value=f"203.0.113.{i+1}",
-                    severity=["Critical", "High", "Medium", "Low"][i % 4],
-                    confidence=["High", "Medium", "Low"][i % 3],
-                    username="system",
-                    tags=["malicious", "botnet" if i % 2 == 0 else "scanner"],
-                    reference_url="https://example.com/threat-report"
+                    ioc_value=f"192.168.1.{i+1}",
+                    severity="High",
+                    confidence="Medium",
+                    username="system"
                 )
-        
+
         elif feed_type == "Malware Indicators":
-            for i in range(8):
-                # Add file hashes
-                hash_type = ["md5", "sha1", "sha256"][i % 3]
+            for i in range(5):
                 add_intel_item(
                     feed_id=feed_id,
                     title=f"Malware Sample {i+1}",
-                    description=f"File hash for {['Emotet', 'Trickbot', 'Ryuk', 'Conti'][i % 4]} malware variant",
-                    ioc_type=hash_type,
-                    ioc_value=hashlib.sha256(f"malware{i}".encode()).hexdigest()[:32 if hash_type == "md5" else 40 if hash_type == "sha1" else 64],
-                    severity=["Critical", "High", "Medium"][i % 3],
-                    confidence="High",
-                    username="system",
-                    tags=["malware", ["Emotet", "Trickbot", "Ryuk", "Conti"][i % 4]],
-                    reference_url="https://example.com/malware-analysis"
-                )
-        
-        elif feed_type == "APT Campaigns":
-            apt_groups = ["APT29", "APT28", "APT41", "Lazarus Group"]
-            for i, apt in enumerate(apt_groups):
-                # Add domain IOC
-                add_intel_item(
-                    feed_id=feed_id,
-                    title=f"{apt} C2 Domain",
-                    description=f"Command and Control domain used by {apt} in recent campaigns",
-                    ioc_type="domain",
-                    ioc_value=f"{apt.lower().replace(' ', '-')}-command.example.com",
-                    severity="High",
-                    confidence="Medium",
-                    username="system",
-                    tags=["apt", apt],
-                    reference_url="https://example.com/apt-report"
-                )
-                
-                # Add IP IOC
-                add_intel_item(
-                    feed_id=feed_id,
-                    title=f"{apt} Exfiltration Server",
-                    description=f"Data exfiltration server used by {apt}",
-                    ioc_type="ip",
-                    ioc_value=f"198.51.100.{i+1}",
+                    description=f"File hash for malware sample {i+1}",
+                    ioc_type="md5",
+                    ioc_value=f"d41d8cd98f00b204e9800998ecf8427{i}",
                     severity="Critical",
                     confidence="High",
-                    username="system",
-                    tags=["apt", apt, "exfiltration"],
-                    reference_url="https://example.com/apt-report"
+                    username="system"
                 )
-        
-        elif feed_type == "Phishing URLs":
-            for i in range(6):
+
+        elif feed_type == "APT Campaigns":
+            for i in range(5):
                 add_intel_item(
                     feed_id=feed_id,
-                    title=f"Phishing Campaign {i+1}",
-                    description=f"URL used in recent phishing campaign targeting {['financial', 'healthcare', 'government', 'energy', 'retail', 'education'][i % 6]} sector",
+                    title=f"APT Campaign {i+1}",
+                    description=f"APT campaign targeting sector {i+1}",
+                    ioc_type="domain",
+                    ioc_value=f"apt-campaign-{i}.example.com",
+                    severity="Critical",
+                    confidence="High",
+                    username="system"
+                )
+
+        elif feed_type == "Phishing URLs":
+            for i in range(5):
+                add_intel_item(
+                    feed_id=feed_id,
+                    title=f"Phishing URL {i+1}",
+                    description=f"URL used in phishing campaign {i+1}",
                     ioc_type="url",
-                    ioc_value=f"https://phishing-{i}.example.com/login.php",
-                    severity=["High", "Medium"][i % 2],
-                    confidence=["High", "Medium", "Low"][i % 3],
-                    username="system",
-                    tags=["phishing", ["financial", "healthcare", "government", "energy", "retail", "education"][i % 6]],
-                    reference_url="https://example.com/phishing-analysis"
+                    ioc_value=f"https://phishing-{i}.example.com/login",
+                    severity="Medium",
+                    confidence="Low",
+                    username="system"
                 )
 
 def show_threat_intel_management():
@@ -824,3 +798,20 @@ def show_threat_intel_feed():
                 st.plotly_chart(fig2, use_container_width=True)
             
             st.plotly_chart(fig3, use_container_width=True)
+
+# Add validation and deduplication for IOCs
+def validate_and_deduplicate_iocs(iocs):
+    """Validate and remove duplicate IOCs."""
+    seen = set()
+    valid_iocs = []
+    for ioc in iocs:
+        if ioc not in seen:
+            seen.add(ioc)
+            valid_iocs.append(ioc)
+    return valid_iocs
+
+# Example usage in add_intel_item
+def add_intel_item_with_validation(feed_id, ioc):
+    validated_iocs = validate_and_deduplicate_iocs([ioc])
+    for valid_ioc in validated_iocs:
+        add_intel_item(feed_id, valid_ioc)

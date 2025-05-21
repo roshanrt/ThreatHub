@@ -4,6 +4,7 @@ import hashlib
 import secrets
 import datetime
 from database import get_db_connection
+import pyotp
 
 # User roles
 ROLES = {
@@ -85,6 +86,16 @@ def authenticate_user(username, password):
     
     conn.close()
     return False, None
+
+# Add multi-factor authentication (MFA) support
+def generate_mfa_secret():
+    """Generate a secret key for MFA."""
+    return pyotp.random_base32()
+
+def verify_mfa_token(secret, token):
+    """Verify an MFA token."""
+    totp = pyotp.TOTP(secret)
+    return totp.verify(token)
 
 def login():
     """Display login form and handle login logic"""

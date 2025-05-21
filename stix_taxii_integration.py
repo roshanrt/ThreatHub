@@ -173,109 +173,108 @@ def extract_iocs_from_stix(stix_objects):
     Returns:
         Dictionary of extracted IOCs by type
     """
-    iocs = {
-        "ipv4": [],
-        "ipv6": [],
-        "domain": [],
-        "url": [],
-        "email": [],
-        "file_hash": {
-            "md5": [],
-            "sha1": [],
-            "sha256": []
+    try:
+        iocs = {
+            "ipv4": [],
+            "ipv6": [],
+            "domain": [],
+            "url": [],
+            "email": [],
+            "file_hash": {
+                "md5": [],
+                "sha1": [],
+                "sha256": []
+            }
         }
-    }
-    
-    for obj in stix_objects:
-        # Skip non-indicator objects
-        if obj.get("type") != "indicator":
-            continue
-            
-        pattern = obj.get("pattern", "")
         
-        # Extract IPv4 addresses
-        if "ipv4-addr" in pattern:
-            parts = pattern.split("ipv4-addr:value")
-            for part in parts[1:]:
-                if "'" in part or '"' in part:
-                    # Extract the IP within quotes
-                    ip = part.split("'")[1] if "'" in part else part.split('"')[1]
-                    if ip not in iocs["ipv4"]:
-                        iocs["ipv4"].append(ip)
-                        
-        # Extract IPv6 addresses
-        if "ipv6-addr" in pattern:
-            parts = pattern.split("ipv6-addr:value")
-            for part in parts[1:]:
-                if "'" in part or '"' in part:
-                    # Extract the IP within quotes
-                    ip = part.split("'")[1] if "'" in part else part.split('"')[1]
-                    if ip not in iocs["ipv6"]:
-                        iocs["ipv6"].append(ip)
-                        
-        # Extract domains
-        if "domain-name" in pattern:
-            parts = pattern.split("domain-name:value")
-            for part in parts[1:]:
-                if "'" in part or '"' in part:
-                    # Extract the domain within quotes
-                    domain = part.split("'")[1] if "'" in part else part.split('"')[1]
-                    if domain not in iocs["domain"]:
-                        iocs["domain"].append(domain)
-                        
-        # Extract URLs
-        if "url:value" in pattern:
-            parts = pattern.split("url:value")
-            for part in parts[1:]:
-                if "'" in part or '"' in part:
-                    # Extract the URL within quotes
-                    url = part.split("'")[1] if "'" in part else part.split('"')[1]
-                    if url not in iocs["url"]:
-                        iocs["url"].append(url)
-                        
-        # Extract email addresses
-        if "email-addr" in pattern:
-            parts = pattern.split("email-addr:value")
-            for part in parts[1:]:
-                if "'" in part or '"' in part:
-                    # Extract the email within quotes
-                    email = part.split("'")[1] if "'" in part else part.split('"')[1]
-                    if email not in iocs["email"]:
-                        iocs["email"].append(email)
-                        
-        # Extract file hashes
-        if "file:hashes" in pattern:
-            # MD5
-            if "MD5" in pattern:
-                parts = pattern.split("file:hashes.MD5")
+        for obj in stix_objects:
+            # Skip non-indicator objects
+            if obj.get("type") != "indicator":
+                continue
+                
+            pattern = obj.get("pattern", "")
+            
+            # Extract IPv4 addresses
+            if "ipv4-addr" in pattern:
+                parts = pattern.split("ipv4-addr:value")
                 for part in parts[1:]:
                     if "'" in part or '"' in part:
-                        # Extract the hash within quotes
-                        hash_val = part.split("'")[1] if "'" in part else part.split('"')[1]
-                        if hash_val not in iocs["file_hash"]["md5"]:
-                            iocs["file_hash"]["md5"].append(hash_val)
-                            
-            # SHA-1
-            if "SHA-1" in pattern:
-                parts = pattern.split("file:hashes.SHA-1")
+                        ip = part.split("'")[1] if "'" in part else part.split('"')[1]
+                        if ip not in iocs["ipv4"]:
+                            iocs["ipv4"].append(ip)
+                        
+            # Extract IPv6 addresses
+            if "ipv6-addr" in pattern:
+                parts = pattern.split("ipv6-addr:value")
                 for part in parts[1:]:
                     if "'" in part or '"' in part:
-                        # Extract the hash within quotes
-                        hash_val = part.split("'")[1] if "'" in part else part.split('"')[1]
-                        if hash_val not in iocs["file_hash"]["sha1"]:
-                            iocs["file_hash"]["sha1"].append(hash_val)
-                            
-            # SHA-256
-            if "SHA-256" in pattern:
-                parts = pattern.split("file:hashes.SHA-256")
+                        ip = part.split("'")[1] if "'" in part else part.split('"')[1]
+                        if ip not in iocs["ipv6"]:
+                            iocs["ipv6"].append(ip)
+                        
+            # Extract domains
+            if "domain-name" in pattern:
+                parts = pattern.split("domain-name:value")
                 for part in parts[1:]:
                     if "'" in part or '"' in part:
-                        # Extract the hash within quotes
-                        hash_val = part.split("'")[1] if "'" in part else part.split('"')[1]
-                        if hash_val not in iocs["file_hash"]["sha256"]:
-                            iocs["file_hash"]["sha256"].append(hash_val)
+                        domain = part.split("'")[1] if "'" in part else part.split('"')[1]
+                        if domain not in iocs["domain"]:
+                            iocs["domain"].append(domain)
+                        
+            # Extract URLs
+            if "url:value" in pattern:
+                parts = pattern.split("url:value")
+                for part in parts[1:]:
+                    if "'" in part or '"' in part:
+                        url = part.split("'")[1] if "'" in part else part.split('"')[1]
+                        if url not in iocs["url"]:
+                            iocs["url"].append(url)
+                        
+            # Extract email addresses
+            if "email-addr" in pattern:
+                parts = pattern.split("email-addr:value")
+                for part in parts[1:]:
+                    if "'" in part or '"' in part:
+                        email = part.split("'")[1] if "'" in part else part.split('"')[1]
+                        if email not in iocs["email"]:
+                            iocs["email"].append(email)
+                        
+            # Extract file hashes
+            if "file:hashes" in pattern:
+                # MD5
+                if "MD5" in pattern:
+                    parts = pattern.split("file:hashes.MD5")
+                    for part in parts[1:]:
+                        if "'" in part or '"' in part:
+                            hash_val = part.split("'")[1] if "'" in part else part.split('"')[1]
+                            if hash_val not in iocs["file_hash"]["md5"]:
+                                iocs["file_hash"]["md5"].append(hash_val)
                             
-    return iocs
+                # SHA-1
+                if "SHA-1" in pattern:
+                    parts = pattern.split("file:hashes.SHA-1")
+                    for part in parts[1:]:
+                        if "'" in part or '"' in part:
+                            hash_val = part.split("'")[1] if "'" in part else part.split('"')[1]
+                            if hash_val not in iocs["file_hash"]["sha1"]:
+                                iocs["file_hash"]["sha1"].append(hash_val)
+                            
+                # SHA-256
+                if "SHA-256" in pattern:
+                    parts = pattern.split("file:hashes.SHA-256")
+                    for part in parts[1:]:
+                        if "'" in part or '"' in part:
+                            hash_val = part.split("'")[1] if "'" in part else part.split('"')[1]
+                            if hash_val not in iocs["file_hash"]["sha256"]:
+                                iocs["file_hash"]["sha256"].append(hash_val)
+                            
+        return iocs
+    except KeyError as e:
+        st.error(f"Error extracting IOCs: Missing key - {str(e)}")
+        return {}
+    except Exception as e:
+        st.error(f"An unexpected error occurred while extracting IOCs: {str(e)}")
+        return {}
 
 def get_stix_object_metadata(obj):
     """

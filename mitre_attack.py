@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 import numpy as np
 import os
 import random
+import requests
 from ml_prediction import predict_ttps_in_mitre_attack
 
 def load_mitre_attack_data():
@@ -63,6 +64,20 @@ def load_mitre_attack_data():
     
     return techniques
 
+def fetch_live_mitre_data(api_url):
+    """Fetch live MITRE ATT&CK data from an API."""
+    response = requests.get(api_url)
+    response.raise_for_status()
+    return response.json()
+
+def load_mitre_attack_data_with_live_update():
+    try:
+        live_data = fetch_live_mitre_data("https://api.mitre.org/attack")
+        return live_data
+    except Exception as e:
+        print("Failed to fetch live data, falling back to local data.", e)
+        return load_mitre_attack_data()
+
 def generate_mitre_matrix(techniques_data, highlight_techniques=None, coverage_data=None):
     """
     Generate a MITRE ATT&CK matrix with optional highlighting for specific techniques
@@ -88,6 +103,7 @@ def generate_mitre_matrix(techniques_data, highlight_techniques=None, coverage_d
     
     # Initialize the matrix with zeros
     matrix = np.zeros((len(techniques), len(tactics)))
+
     
     # Prepare technique labels and coverage information
     technique_labels = []

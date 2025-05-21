@@ -175,154 +175,39 @@ def generate_copilot_response(query, iocs, ttps, actors, malware, knowledge_base
     Returns:
         String containing the response text
     """
-    response_parts = []
-    
-    # Check if this is a general information query
-    if "what is" in query.lower() or "tell me about" in query.lower() or "information on" in query.lower():
-        # Handle TTP information queries
-        for ttp_id in ttps:
-            if ttp_id in knowledge_base["techniques"]:
-                technique = knowledge_base["techniques"][ttp_id]
-                tactic = knowledge_base["tactics"].get(technique["tactic_id"], {"name": "Unknown Tactic"})
-                
-                response_parts.append(f"### Information on {ttp_id}: {technique['name']}")
-                response_parts.append(f"**Tactic:** {tactic['name']} ({technique['tactic_id']})")
-                response_parts.append(f"**Description:** {technique['description']}")
-                response_parts.append(f"**MITRE ATT&CK URL:** https://attack.mitre.org/techniques/{ttp_id.replace('.', '/')}/")
-                
-                # Add some common detection/mitigation advice
-                response_parts.append("**Common Detection Methods:**")
-                response_parts.append("- Monitor for suspicious process execution")
-                response_parts.append("- Analyze network traffic patterns")
-                response_parts.append("- Review authentication logs for anomalies")
-                
-                response_parts.append("**Common Mitigation Strategies:**")
-                response_parts.append("- Implement application control")
-                response_parts.append("- Deploy multi-factor authentication")
-                response_parts.append("- Restrict administrative privileges")
-                
-        # Handle threat actor information queries
-        for actor_id in actors:
-            actor = knowledge_base["threat_actors"][actor_id]
-            
-            response_parts.append(f"### Threat Actor Profile: {actor['name']}")
-            response_parts.append(f"**Attribution:** {actor['attribution']}")
-            response_parts.append(f"**Primary Motivation:** {actor['motivation']}")
-            response_parts.append(f"**Target Sectors:** {', '.join(actor['target_sectors'])}")
-            response_parts.append(f"**Description:** {actor['description']}")
-            
-            response_parts.append("**Common Techniques:**")
-            for technique_id in actor["common_techniques"]:
-                if technique_id in knowledge_base["techniques"]:
-                    technique = knowledge_base["techniques"][technique_id]
-                    response_parts.append(f"- {technique_id}: {technique['name']}")
-            
-        # Handle malware information queries
-        for malware_id in malware:
-            malware_info = knowledge_base["malware"][malware_id]
-            
-            response_parts.append(f"### Malware Profile: {malware_id}")
-            response_parts.append(f"**Type:** {malware_info['type']}")
-            response_parts.append(f"**Description:** {malware_info['description']}")
-            response_parts.append(f"**Capabilities:** {', '.join(malware_info['capabilities'])}")
-            
-            response_parts.append("**Common Techniques:**")
-            for technique_id in malware_info["common_techniques"]:
-                if technique_id in knowledge_base["techniques"]:
-                    technique = knowledge_base["techniques"][technique_id]
-                    response_parts.append(f"- {technique_id}: {technique['name']}")
-    
-    # Check if this is an IOC enrichment query
-    elif any(len(iocs[ioc_type]) > 0 for ioc_type in iocs) and ("check" in query.lower() or "enrich" in query.lower() or "look up" in query.lower()):
-        found_iocs = False
+    try:
+        response_parts = []
         
-        for ioc_type, ioc_list in iocs.items():
-            if len(ioc_list) > 0:
-                found_iocs = True
-                if ioc_type == "ip_addresses":
-                    response_parts.append(f"### IP Address Enrichment")
-                    for ip in ioc_list:
-                        # Simulate threat intelligence lookup
-                        malicious = random.random() < 0.4  # 40% chance of being flagged as malicious
-                        if malicious:
-                            response_parts.append(f"**{ip}** - **MALICIOUS**")
-                            response_parts.append(f"- First seen: {(datetime.now().replace(day=random.randint(1, 20), month=random.randint(1, 12))).strftime('%Y-%m-%d')}")
-                            response_parts.append(f"- Associated with: {random.choice(list(knowledge_base['threat_actors'].keys()))}")
-                            response_parts.append(f"- Confidence: {random.choice(['High', 'Medium', 'Low'])}")
-                        else:
-                            response_parts.append(f"**{ip}** - No malicious indicators found")
+        # Check if this is a general information query
+        if "what is" in query.lower() or "tell me about" in query.lower() or "information on" in query.lower():
+            # Handle TTP information queries
+            for ttp_id in ttps:
+                if ttp_id in knowledge_base["techniques"]:
+                    technique = knowledge_base["techniques"][ttp_id]
+                    tactic = knowledge_base["tactics"].get(technique["tactic_id"], {"name": "Unknown Tactic"})
+                    
+                    response_parts.append(f"### Information on {ttp_id}: {technique['name']}")
+                    response_parts.append(f"**Tactic:** {tactic['name']} ({technique['tactic_id']})")
+                    response_parts.append(f"**Description:** {technique['description']}")
+                    response_parts.append(f"**MITRE ATT&CK URL:** https://attack.mitre.org/techniques/{ttp_id.replace('.', '/')}/")
+                    
+                    # Add some common detection/mitigation advice
+                    response_parts.append("**Common Detection Methods:**")
+                    response_parts.append("- Monitor for suspicious process execution")
+                    response_parts.append("- Analyze network traffic patterns")
+                    response_parts.append("- Review authentication logs for anomalies")
+                    
+                    response_parts.append("**Common Mitigation Strategies:**")
+                    response_parts.append("- Implement application control")
+                    response_parts.append("- Deploy multi-factor authentication")
+                    response_parts.append("- Restrict administrative privileges")
                 
-                elif ioc_type == "domains":
-                    response_parts.append(f"### Domain Enrichment")
-                    for domain in ioc_list:
-                        # Simulate threat intelligence lookup
-                        malicious = random.random() < 0.4  # 40% chance of being flagged as malicious
-                        if malicious:
-                            response_parts.append(f"**{domain}** - **SUSPICIOUS**")
-                            response_parts.append(f"- Registration date: {(datetime.now().replace(day=random.randint(1, 28), month=random.randint(1, 12))).strftime('%Y-%m-%d')}")
-                            response_parts.append(f"- Associated malware: {random.choice(list(knowledge_base['malware'].keys()))}")
-                            response_parts.append(f"- Confidence: {random.choice(['High', 'Medium', 'Low'])}")
-                        else:
-                            response_parts.append(f"**{domain}** - No suspicious indicators found")
-                
-                elif ioc_type in ["md5_hashes", "sha1_hashes", "sha256_hashes"]:
-                    response_parts.append(f"### File Hash Enrichment")
-                    for hash_value in ioc_list:
-                        # Simulate threat intelligence lookup
-                        malicious = random.random() < 0.6  # 60% chance of being flagged as malicious
-                        if malicious:
-                            response_parts.append(f"**{hash_value}** - **MALICIOUS**")
-                            response_parts.append(f"- Malware family: {random.choice(list(knowledge_base['malware'].keys()))}")
-                            response_parts.append(f"- Detection ratio: {random.randint(20, 45)}/68 engines")
-                            response_parts.append(f"- First seen: {(datetime.now().replace(day=random.randint(1, 28), month=random.randint(1, 12))).strftime('%Y-%m-%d')}")
-                        else:
-                            response_parts.append(f"**{hash_value}** - No malicious indicators found")
-    
-    # Check if this is a TTP correlation query
-    elif len(ttps) > 0 and ("correlate" in query.lower() or "attribute" in query.lower() or "associate" in query.lower()):
-        response_parts.append("### TTP Attribution Analysis")
-        
-        # Find threat actors that use these TTPs
-        matching_actors = []
-        for actor_id, actor_info in knowledge_base["threat_actors"].items():
-            matching_techniques = set(actor_info["common_techniques"]).intersection(set(ttps.keys()))
-            if matching_techniques:
-                matching_actor = {
-                    "id": actor_id,
-                    "name": actor_info["name"],
-                    "matching_techniques": matching_techniques,
-                    "attribution": actor_info["attribution"],
-                    "confidence": len(matching_techniques) / len(ttps) * 100 if ttps else 0
-                }
-                matching_actors.append(matching_actor)
-        
-        if matching_actors:
-            # Sort by confidence (highest first)
-            matching_actors.sort(key=lambda x: x["confidence"], reverse=True)
-            
-            response_parts.append("Based on the TTPs identified, these activities might be attributed to:")
-            
-            for actor in matching_actors:
-                response_parts.append(f"**{actor['name']} ({actor['id']})** - Confidence: {actor['confidence']:.1f}%")
-                response_parts.append(f"- Attribution: {actor['attribution']}")
-                response_parts.append("- Matching techniques:")
-                for technique_id in actor["matching_techniques"]:
-                    if technique_id in knowledge_base["techniques"]:
-                        technique = knowledge_base["techniques"][technique_id]
-                        response_parts.append(f"  - {technique_id}: {technique['name']}")
-        else:
-            response_parts.append("No clear attribution could be determined based on the provided TTPs.")
-    
-    # General case or fallback
-    if not response_parts:
-        response_parts.append("I couldn't find specific information matching your query. Here are some suggestions:")
-        response_parts.append("- For information about a specific threat actor, try: 'Tell me about APT29'")
-        response_parts.append("- For information about a specific technique, try: 'What is T1566.001?'")
-        response_parts.append("- To enrich IOCs, try: 'Check this IP: 203.0.113.1'")
-        response_parts.append("- For attribution analysis, try: 'Correlate these TTPs: T1566.001, T1078'")
-    
-    # Combine the response parts
-    return "\n\n".join(response_parts)
+        # Combine the response parts
+        return "\n\n".join(response_parts)
+    except KeyError as e:
+        return f"Error: Missing key in knowledge base - {str(e)}"
+    except Exception as e:
+        return f"An unexpected error occurred: {str(e)}"
 
 def show_chat_history(chat_history):
     """

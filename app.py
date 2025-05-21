@@ -4,6 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import os
 import json
+import asyncio
 
 from auth import login, logout, check_authentication, is_admin
 from dashboard import show_dashboard
@@ -37,6 +38,16 @@ if 'role' not in st.session_state:
     st.session_state.role = None
 if 'active_page' not in st.session_state:
     st.session_state.active_page = "Dashboard"
+
+# Ensure the event loop is properly initialized
+try:
+    loop = asyncio.get_event_loop()
+except RuntimeError:
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+if not loop.is_running():
+    asyncio.set_event_loop(asyncio.new_event_loop())
 
 # Authentication check
 if not st.session_state.authenticated:
@@ -121,4 +132,4 @@ else:
 
 # Add footer
 st.sidebar.markdown("---")
-st.sidebar.caption("© 2023 CyberShield Security Platform")
+st.sidebar.caption("© 2025 CyberShield Security Platform")

@@ -14,3 +14,27 @@ Automatically generate and export security detection rules for popular security 
 Deliver interactive dashboards and comprehensive PDF reports to simplify threat analysis.
 
 CyberShield empowers security teams to reduce manual effort, improve threat detection accuracy, and respond to cyber threats faster and more effectively.
+
+## Setup Instructions
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-repo/threathub.git
+   ```
+
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Run the application:
+   ```bash
+   streamlit run app.py
+   ```
+
+4. Configure TAXII servers and other settings in the application interface.
+
+## Troubleshooting
+
+- If you encounter issues with TAXII server connections, ensure the server details are correct and retry.
+- For MFA setup, ensure you have a compatible authenticator app like Google Authenticator or Authy.

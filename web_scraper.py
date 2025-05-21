@@ -3,9 +3,15 @@ import streamlit as st
 import json
 import re
 import datetime
+import os
 from data_processing import save_processed_data
+from typing import Optional
 
-def get_website_text_content(url: str) -> str | None:
+# Load patterns from environment variables or use defaults
+DOMAIN_PATTERN = os.getenv('DOMAIN_PATTERN', r'https?://(?:www\.)?([^/]+)')
+URL_PATTERN = os.getenv('URL_PATTERN', r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+')
+
+def get_website_text_content(url: str) -> Optional[str]:
     """
     Extract the main text content of a website using trafilatura.
     
@@ -80,7 +86,7 @@ def save_website_report(result, filename=None):
         Path to the saved file
     """
     if filename is None:
-        source_domain = re.search(r'https?://(?:www\.)?([^/]+)', result["source_url"])
+        source_domain = re.search(DOMAIN_PATTERN, result["source_url"])
         if source_domain:
             domain = source_domain.group(1).replace('.', '_')
             filename = f"web_threat_report_{domain}_{datetime.datetime.now().strftime('%Y%m%d')}.json"
@@ -99,6 +105,5 @@ def extract_urls_from_text(text):
     Returns:
         List of extracted URLs
     """
-    url_pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'
-    urls = re.findall(url_pattern, text)
+    urls = re.findall(URL_PATTERN, text)
     return list(set(urls))  # Remove duplicates
