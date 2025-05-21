@@ -317,7 +317,7 @@ def show_report_generation():
                     labels={"y": "Observed", "Technique ID": "MITRE ATT&CK Technique"},
                     title="Observed MITRE ATT&CK Techniques"
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, use_container_width=True, key="report_fig")
         
         with preview_tabs[3]:
             for i, recommendation in enumerate(parsed_recommendations):

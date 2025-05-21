@@ -153,8 +153,9 @@ def parse_json_threat_report(json_content: str) -> dict:
 def save_processed_data(data: dict, file_name: str) -> str:
     """Save processed data to a file"""
     try:
-        os.makedirs("sample_data", exist_ok=True)
-        file_path = f"sample_data/{file_name}"
+        # Update the directory path
+        os.makedirs("data_resources", exist_ok=True)
+        file_path = f"data_resources/{file_name}"
         with open(file_path, "w") as f:
             json.dump(data, f, indent=2)
         logging.info(f"Data saved to {file_path}")

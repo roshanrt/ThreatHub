@@ -7,18 +7,24 @@ import random
 from datetime import datetime, timedelta
 import os
 import time
+from stix2 import parse
+from stix_taxii_integration import extract_iocs_from_stix
 
-def load_sample_data():
-    """Load sample telemetry data for dashboard visualizations"""
-    # If the sample data file exists, load it
-    if os.path.exists("sample_data/threat_telemetry.csv"):
-        try:
-            df = pd.read_csv("sample_data/threat_telemetry.csv")
-            return df
-        except Exception as e:
-            st.error(f"Error loading sample data: {e}")
+def load_reference_data():
+    """Load telemetry data for the dashboard"""
+    try:
+        if os.path.exists("data_resources/threat_telemetry.csv"):
+            with st.spinner("Loading threat telemetry data..."):
+                df = pd.read_csv("data_resources/threat_telemetry.csv")
+                return df
+    except Exception as e:
+        st.error(f"Error loading data: {str(e)}")
     
-    # Generate sample data if file doesn't exist
+    return generate_reference_data()
+
+def generate_reference_data():
+    """Generate reference telemetry data for dashboard visualizations"""
+    # Generate reference data if file doesn't exist
     # This is for demonstration purposes only
     dates = [(datetime.now() - timedelta(days=x)).strftime("%Y-%m-%d") for x in range(30)]
     
@@ -44,8 +50,8 @@ def load_sample_data():
     df = pd.DataFrame(data)
     
     # Save the generated data
-    os.makedirs("sample_data", exist_ok=True)
-    df.to_csv("sample_data/threat_telemetry.csv", index=False)
+    os.makedirs("data_resources", exist_ok=True)
+    df.to_csv("data_resources/threat_telemetry.csv", index=False)
     
     return df
 
@@ -63,7 +69,7 @@ def show_dashboard():
 
     while True:
         # Load telemetry data
-        df = load_sample_data()
+        df = load_reference_data()
 
         # Summary metrics
         col1, col2, col3, col4 = st.columns(4)
@@ -98,7 +104,7 @@ def show_dashboard():
             time_series = df.groupby("date").size().reset_index(name="count")
             time_series = time_series.sort_values("date")
         else:
-            # Create sample date range if date column doesn't exist
+            # Create reference date range if date column doesn't exist
             dates = pd.date_range(end=pd.Timestamp.now(), periods=30, freq="D")
             time_series = pd.DataFrame({
                 "date": dates,
@@ -111,7 +117,7 @@ def show_dashboard():
             labels={"date": "Date", "count": "Number of Attacks"}
         )
         
-        st.plotly_chart(fig1, use_container_width=True)
+        st.plotly_chart(fig1, use_container_width=True, key="dashboard_fig1_v1")
         
         # Split the dashboard into two columns
         col1, col2 = st.columns(2)
@@ -244,3 +250,43 @@ def show_dashboard():
             st.dataframe(df)
 
         time.sleep(refresh_interval)
+
+def show_stix_file_upload():
+    """Display the STIX file upload interface."""
+    st.title("STIX File Upload")
+
+    st.markdown("""
+    ## Upload and Analyze STIX Files
+
+    Drag and drop your STIX 2.1 JSON files to extract and analyze Indicators of Compromise (IOCs).
+    """)
+
+    uploaded_file = st.file_uploader("Upload STIX File", type=["json"])
+
+    if uploaded_file is not None:
+        try:
+            # Parse the uploaded file
+            stix_data = json.load(uploaded_file)
+            stix_objects = stix_data.get("objects", [])
+
+            # Extract IOCs
+            iocs = extract_iocs_from_stix(stix_objects)
+
+            # Display extracted IOCs
+            st.subheader("Extracted Indicators of Compromise (IOCs)")
+            for ioc_type, values in iocs.items():
+                if isinstance(values, list) and values:
+                    st.markdown(f"### {ioc_type.capitalize()} ({len(values)})")
+                    st.write(values)
+
+            # Show summary statistics
+            st.subheader("Summary Statistics")
+            stats = {ioc_type: len(values) for ioc_type, values in iocs.items() if isinstance(values, list)}
+            st.json(stats)
+
+        except Exception as e:
+            st.error(f"Error processing the STIX file: {str(e)}")
+
+# Add this function to the Streamlit app
+if __name__ == "__main__":
+    show_stix_file_upload()

@@ -11,6 +11,9 @@ from datetime import datetime, timedelta
 import os
 from database import db_connection
 from threat_intel_feed import add_intel_item, get_feeds, create_feed
+from pymongo import MongoClient
+import requests
+import csv
 
 def discover_taxii_server(url, version="2.1", username=None, password=None):
     """
@@ -801,6 +804,105 @@ def delete_taxii_server(server_id):
         cursor.execute("DELETE FROM taxii_servers WHERE id = ?", (server_id,))
         conn.commit()
 
+def append_worldwide_attacks_to_csv(collection_url, version="2.1", added_after=None, username=None, password=None):
+    """
+    Fetch worldwide attack data from a TAXII collection and append it to the threat_telemetry.csv file.
+
+    Args:
+        collection_url: URL of the TAXII collection
+        version: TAXII version (2.0 or 2.1)
+        added_after: Optional datetime to filter by
+        username: Optional username for authentication
+        password: Optional password for authentication
+    """
+    try:
+        # Fetch STIX objects from the collection
+        stix_objects = get_collection_objects(
+            collection_url, version, added_after, username, password
+        )
+
+        if not stix_objects:
+            print("No STIX objects found in the collection.")
+            return
+
+        # Prepare data for appending to CSV
+        rows = []
+        for obj in stix_objects:
+            if obj.get("type") == "indicator":
+                labels = obj.get("labels", [])
+                severity = "Medium"
+                if "critical" in labels:
+                    severity = "Critical"
+                elif "high" in labels:
+                    severity = "High"
+                elif "low" in labels:
+                    severity = "Low"
+
+                rows.append({
+                    "date": datetime.now().strftime("%Y-%m-%d"),
+                    "attack_type": obj.get("name", "Unknown"),
+                    "severity": severity,
+                    "detected": False,
+                    "blocked": False
+                })
+
+        # Load existing CSV
+        csv_path = "data_resources/threat_telemetry.csv"
+        if os.path.exists(csv_path):
+            df = pd.read_csv(csv_path)
+        else:
+            df = pd.DataFrame(columns=["date", "attack_type", "severity", "detected", "blocked"])
+
+        # Append new rows
+        new_df = pd.DataFrame(rows)
+        df = pd.concat([df, new_df], ignore_index=True)
+
+        # Save back to CSV
+        df.to_csv(csv_path, index=False)
+        print("Worldwide attack data appended to threat_telemetry.csv.")
+
+    except Exception as e:
+        print(f"Error appending worldwide attacks to CSV: {str(e)}")
+
+def store_in_mongodb(data, db_name="threat_intel", collection_name="stix_objects"):
+    """
+    Store data in MongoDB.
+
+    Args:
+        data: List of STIX objects to store.
+        db_name: Name of the MongoDB database.
+        collection_name: Name of the collection.
+
+    Returns:
+        None
+    """
+    try:
+        client = MongoClient("mongodb://localhost:27017/")
+        db = client[db_name]
+        collection = db[collection_name]
+        collection.insert_many(data)
+        st.success(f"Successfully stored {len(data)} objects in MongoDB.")
+    except Exception as e:
+        st.error(f"Error storing data in MongoDB: {str(e)}")
+
+def store_in_json(data, file_path="stix_objects.json"):
+    """
+    Store data in a JSON file.
+
+    Args:
+        data: List of STIX objects to store.
+        file_path: Path to the JSON file.
+
+    Returns:
+        None
+    """
+    try:
+        with open(file_path, "w") as f:
+            json.dump(data, f, indent=4)
+        st.success(f"Successfully stored data in {file_path}.")
+    except Exception as e:
+        st.error(f"Error storing data in JSON file: {str(e)}")
+
 def show_stix_taxii_integration():
     """Display the STIX/TAXII integration interface"""
     st.title("STIX/TAXII Integration")
@@ -1085,7 +1187,7 @@ def show_stix_taxii_integration():
                             stix_bundle_obj = json.loads(stix_bundle)
                             stix_yaml = yaml.dump(stix_bundle_obj, default_flow_style=False)
                             
-                            # Display sample
+                            # Display illustration
                             st.subheader("STIX Bundle (YAML)")
                             with st.expander("Preview"):
                                 st.code(stix_yaml[:1000] + "...", language="yaml")
@@ -1099,7 +1201,7 @@ def show_stix_taxii_integration():
                                 mime="application/x-yaml"
                             )
                         else:
-                            # Display sample
+                            # Display illustration
                             st.subheader("STIX Bundle (JSON)")
                             with st.expander("Preview"):
                                 st.code(stix_bundle[:1000] + "...", language="json")
@@ -1185,11 +1287,11 @@ def show_stix_taxii_integration():
                 else:
                     st.warning("Please provide both a server name and discovery URL.")
         
-        # Add sample servers
+        # Add default servers
         if not saved_servers:
-            if st.button("Add Sample TAXII Servers"):
-                # Sample TAXII servers configurations
-                sample_servers = [
+            if st.button("Add Default TAXII Servers"):
+                # Default TAXII servers configurations
+                default_servers = [
                     {
                         "name": "MITRE ATT&CK",
                         "discovery_url": "https://cti-taxii.mitre.org/taxii/",
@@ -1199,7 +1301,7 @@ def show_stix_taxii_integration():
                         "added_by": st.session_state.username
                     },
                     {
-                        "name": "STIX Samples",
+                        "name": "STIX Reference Data",
                         "discovery_url": "https://oasis-open.github.io/cti-taxii-server/discovery/",
                         "version": "2.1",
                         "username": None,
@@ -1208,8 +1310,6 @@ def show_stix_taxii_integration():
                     }
                 ]
                 
-                # Save sample servers
-                save_taxii_servers(sample_servers)
-                
-                st.success("Sample TAXII servers added successfully!")
-                st.rerun()
+                # Save default servers
+                save_taxii_servers(default_servers)
+                st.success("Default TAXII servers added successfully!")

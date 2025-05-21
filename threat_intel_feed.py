@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 import hashlib
 from database import db_connection, get_db_connection
+import requests
 
 def init_threat_intel_feed_db():
     """Initialize the threat intel feed database tables if they don't exist"""
@@ -267,82 +268,70 @@ def delete_intel_item(item_id):
             st.error(f"Error deleting intel item: {str(e)}")
             return False
 
-def generate_sample_threat_feed():
-    """Generate a sample threat intelligence feed for demonstration"""
-    # Clear existing sample data if any
+def fetch_osint_data(url):
+    """Fetch data from an OSINT source URL."""
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.text
+    except Exception as e:
+        st.error(f"Failed to fetch data from {url}: {str(e)}")
+        return None
+
+def populate_threat_intel_feed():
+    """Populate the threat intelligence feed with data from trusted OSINT sources."""
+    # Remove any previous reference data
     with db_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM threat_intel_items WHERE feed_id IN (SELECT id FROM threat_intel_feeds WHERE source = 'Sample Data')")
-        cursor.execute("DELETE FROM threat_intel_feeds WHERE source = 'Sample Data'")
+        cursor.execute("DELETE FROM threat_intel_items WHERE feed_id IN (SELECT id FROM threat_intel_feeds WHERE source = 'Reference Data')")
+        cursor.execute("DELETE FROM threat_intel_feeds WHERE source = 'Reference Data'")
         conn.commit()
 
-    # Create sample feeds
-    feed_types = ["IP Blocklist", "Malware Indicators", "APT Campaigns", "Phishing URLs"]
-    sample_feeds = []
+    # Create a feed for OSINT sources
+    feed_id = create_feed(
+        title="OSINT Threat Feeds",
+        description="Threat intelligence feeds from trusted OSINT sources.",
+        source="Reference Data",
+        feed_type="OSINT",
+        username="system"
+    )
 
-    for feed_type in feed_types:
-        feed_id = create_feed(
-            title=f"Sample {feed_type}",
-            description=f"Sample threat intelligence feed for {feed_type}",
-            source="Sample Data",
-            feed_type=feed_type,
-            username="system"
-        )
-        sample_feeds.append((feed_id, feed_type))
+    osint_sources = [
+        "http://danger.rulez.sk/projects/bruteforceblocker/blist.php",
+        "https://dataplane.org/",
+        "http://rules.emergingthreats.net/blockrules/compromised-ips.txt",
+        "https://feodotracker.abuse.ch/downloads/ipblocklist.csv",
+        "https://feodotracker.abuse.ch/downloads/malware_hashes.csv",
+        "https://github.com/firehol/blocklist-ipsets/raw/master/normshield_high_bruteforce.ipset",
+        "https://github.com/firehol/blocklist-ipsets/raw/master/normshield_high_suspicious.ipset",
+        "https://github.com/firehol/blocklist-ipsets/raw/master/normshield_high_webscan.ipset",
+        "https://openphish.com/feed.txt",
+        "https://isc.sans.edu/feeds/block.txt",
+        "https://sblam.com/blacklist.txt",
+        "http://www.spamhaus.org/drop/drop.txt",
+        "http://www.spamhaus.org/drop/edrop.txt",
+        "https://sslbl.abuse.ch/blacklist/sslipblacklist.csv",
+        "https://sslbl.abuse.ch/blacklist/dyre_sslipblacklist.csv",
+        "https://urlhaus.abuse.ch/downloads/csv/",
+        "http://vxvault.net/URL_List.php"
+    ]
 
-    # Add sample IOCs for each feed
-    for feed_id, feed_type in sample_feeds:
-        if feed_type == "IP Blocklist":
-            for i in range(5):
-                add_intel_item(
-                    feed_id=feed_id,
-                    title=f"Malicious IP {i+1}",
-                    description=f"IP address associated with malicious activity {i+1}",
-                    ioc_type="ip",
-                    ioc_value=f"192.168.1.{i+1}",
-                    severity="High",
-                    confidence="Medium",
-                    username="system"
-                )
-
-        elif feed_type == "Malware Indicators":
-            for i in range(5):
-                add_intel_item(
-                    feed_id=feed_id,
-                    title=f"Malware Sample {i+1}",
-                    description=f"File hash for malware sample {i+1}",
-                    ioc_type="md5",
-                    ioc_value=f"d41d8cd98f00b204e9800998ecf8427{i}",
-                    severity="Critical",
-                    confidence="High",
-                    username="system"
-                )
-
-        elif feed_type == "APT Campaigns":
-            for i in range(5):
-                add_intel_item(
-                    feed_id=feed_id,
-                    title=f"APT Campaign {i+1}",
-                    description=f"APT campaign targeting sector {i+1}",
-                    ioc_type="domain",
-                    ioc_value=f"apt-campaign-{i}.example.com",
-                    severity="Critical",
-                    confidence="High",
-                    username="system"
-                )
-
-        elif feed_type == "Phishing URLs":
-            for i in range(5):
-                add_intel_item(
-                    feed_id=feed_id,
-                    title=f"Phishing URL {i+1}",
-                    description=f"URL used in phishing campaign {i+1}",
-                    ioc_type="url",
-                    ioc_value=f"https://phishing-{i}.example.com/login",
-                    severity="Medium",
-                    confidence="Low",
-                    username="system"
-                )
+    for source_url in osint_sources:
+        data = fetch_osint_data(source_url)
+        if data:
+            for line in data.splitlines():
+                ioc_value = line.strip()
+                if ioc_value:
+                    add_intel_item(
+                        feed_id=feed_id,
+                        title=f"Indicator from {source_url}",
+                        description=f"Fetched from {source_url}",
+                        ioc_type="ip" if "." in ioc_value else "url",
+                        ioc_value=ioc_value,
+                        severity="Medium",
+                        confidence="Low",
+                        username="system"
+                    )
 
 def show_threat_intel_management():
     """Display the threat intelligence feed management interface for admins"""
@@ -357,7 +346,7 @@ def show_threat_intel_management():
     init_threat_intel_feed_db()
     
     # Create tabs for different management functions
-    manage_tab, add_tab, sample_tab = st.tabs(["Manage Feeds", "Add Intelligence", "Sample Data"])
+    manage_tab, add_tab, example_tab = st.tabs(["Manage Feeds", "Add Intelligence", "Reference Data"])
     
     with manage_tab:
         st.subheader("Manage Threat Intelligence Feeds")
@@ -366,7 +355,7 @@ def show_threat_intel_management():
         feeds = get_feeds(active_only=False)
         
         if not feeds:
-            st.info("No threat intelligence feeds available. Create a new feed in the 'Add Intelligence' tab or generate sample data.")
+            st.info("No threat intelligence feeds available. Create a new feed in the 'Add Intelligence' tab or generate example data.")
         else:
             # Display feeds in expandable sections
             for feed in feeds:
@@ -560,18 +549,15 @@ def show_threat_intel_management():
                     else:
                         st.warning("Please provide at least a title and IOC value")
     
-    with sample_tab:
-        st.subheader("Generate Sample Data")
-        
+    with example_tab:
+        st.subheader("Threat Intelligence Data Population")
         st.markdown("""
-        For demonstration purposes, you can generate sample threat intelligence feeds with realistic data.
-        This will create several feeds with various types of intelligence items.
+        Populate the threat intelligence feed with data from trusted OSINT sources. This will create a feed with a variety of intelligence items for validation and review.
         """)
-        
-        if st.button("Generate Sample Threat Intelligence Feeds"):
-            with st.spinner("Generating sample data..."):
-                generate_sample_threat_feed()
-                st.success("Sample threat intelligence feeds generated successfully!")
+        if st.button("Populate Threat Intelligence Feed"):
+            with st.spinner("Populating threat intelligence data..."):
+                populate_threat_intel_feed()
+                st.success("Threat intelligence feed populated successfully.")
                 st.rerun()
 
 def show_threat_intel_feed():
@@ -792,12 +778,12 @@ def show_threat_intel_feed():
             col1, col2 = st.columns(2)
             
             with col1:
-                st.plotly_chart(fig1, use_container_width=True)
+                st.plotly_chart(fig1, use_container_width=True, key="threat_feed_fig1")
             
             with col2:
-                st.plotly_chart(fig2, use_container_width=True)
+                st.plotly_chart(fig2, use_container_width=True, key="threat_feed_fig2")
             
-            st.plotly_chart(fig3, use_container_width=True)
+            st.plotly_chart(fig3, use_container_width=True, key="threat_feed_fig3")
 
 # Add validation and deduplication for IOCs
 def validate_and_deduplicate_iocs(iocs):
@@ -815,3 +801,35 @@ def add_intel_item_with_validation(feed_id, ioc):
     validated_iocs = validate_and_deduplicate_iocs([ioc])
     for valid_ioc in validated_iocs:
         add_intel_item(feed_id, valid_ioc)
+
+def import_cti_from_taxii(feed_id, taxii_server_url, collection_name, username):
+    """Import CTI data from a TAXII server into a threat intelligence feed"""
+    try:
+        # First, fetch the CTI data from the TAXII server
+        from stix_taxii_integration import fetch_taxii_data
+        cti_data = fetch_taxii_data(taxii_server_url, collection_name)
+        
+        if not cti_data:
+            st.error("No CTI data received from TAXII server")
+            return
+
+        # Iterate through the fetched CTI data and add it to the feed
+        for item in cti_data:
+            add_intel_item(
+                feed_id=feed_id,
+                title=item.get('title', 'No Title'),
+                description=item.get('description', 'No Description'),
+                ioc_type=item['ioc_type'],
+                ioc_value=item['ioc_value'],
+                severity=item.get('severity', 'Medium'),
+                confidence=item.get('confidence', 'Medium'),
+                username=username,
+                first_seen=item.get('first_seen'),
+                last_seen=item.get('last_seen'),
+                tags=item.get('tags'),
+                reference_url=item.get('reference_url')
+            )
+
+        st.success("CTI data imported successfully from TAXII server!")
+    except Exception as e:
+        st.error(f"Failed to import CTI data: {str(e)}")

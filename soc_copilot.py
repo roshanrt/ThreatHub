@@ -241,7 +241,7 @@ def show_soc_copilot():
         st.session_state.soc_knowledge_base = load_threat_knowledge_base()
     
     # Create tabs for different interaction modes
-    chat_tab, examples_tab, debug_tab = st.tabs(["Chat Interface", "Example Queries", "Knowledge Base"])
+    chat_tab, queries_tab, debug_tab = st.tabs(["Chat Interface", "Example Queries", "Knowledge Base"])
     
     with chat_tab:
         # Display chat history
@@ -266,7 +266,7 @@ def show_soc_copilot():
                 # Add assistant response to chat history
                 st.session_state.soc_chat_history.append({"role": "assistant", "content": response["response_text"]})
     
-    with examples_tab:
+    with queries_tab:
         st.subheader("Example Queries")
         
         st.markdown("""
@@ -348,17 +348,16 @@ def show_soc_copilot():
             st.metric("Tactics", tactics_count)
             st.metric("Techniques", techniques_count)
             
-            # Show sample of techniques
-            sample_techniques = list(st.session_state.soc_knowledge_base["techniques"].items())[:10]
-            techniques_sample_df = pd.DataFrame([
+            # Display selected techniques
+            selected_techniques = list(st.session_state.soc_knowledge_base["techniques"].items())[:10]
+
+            techniques_overview_df = pd.DataFrame([
                 {
-                    "ID": technique_id,
+                    "Technique ID": technique_id,
                     "Name": technique_info["name"],
-                    "Tactic": st.session_state.soc_knowledge_base["tactics"].get(
-                        technique_info["tactic_id"], {"name": "Unknown"}
-                    )["name"]
+                    "Description": technique_info["description"][:100] + "..."
                 }
-                for technique_id, technique_info in sample_techniques
+                for technique_id, technique_info in selected_techniques
             ])
-            st.write("Sample Techniques:")
-            st.dataframe(techniques_sample_df)
+            st.write("Current Attack Techniques:")
+            st.dataframe(techniques_overview_df)

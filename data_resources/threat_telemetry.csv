@@ -1,0 +1,313 @@
+date,attack_type,severity,detected,blocked
+2025-05-21,Credential Stuffing,High,True,True
+2025-05-21,Phishing,High,False,False
+2025-05-21,XSS,High,False,False
+2025-05-21,DDoS,High,True,False
+2025-05-21,Phishing,Medium,False,False
+2025-05-21,Phishing,Critical,False,False
+2025-05-21,Credential Stuffing,Critical,False,False
+2025-05-21,XSS,Low,True,False
+2025-05-21,Ransomware,Critical,True,False
+2025-05-21,Ransomware,Low,True,False
+2025-05-21,SQLi,Critical,False,False
+2025-05-21,Phishing,Low,True,False
+2025-05-21,Ransomware,Medium,True,True
+2025-05-21,DDoS,Medium,True,True
+2025-05-21,Credential Stuffing,Critical,False,False
+2025-05-20,Ransomware,Medium,True,True
+2025-05-20,Credential Stuffing,Medium,False,False
+2025-05-20,Ransomware,Low,False,False
+2025-05-20,SQLi,Critical,False,False
+2025-05-20,Ransomware,Critical,False,False
+2025-05-20,XSS,Medium,False,False
+2025-05-19,DDoS,Low,False,False
+2025-05-19,Phishing,Critical,True,False
+2025-05-19,Credential Stuffing,Critical,True,True
+2025-05-19,Ransomware,High,True,False
+2025-05-19,Phishing,Critical,False,False
+2025-05-19,Credential Stuffing,High,True,False
+2025-05-19,DDoS,Low,True,True
+2025-05-18,SQLi,High,True,True
+2025-05-18,SQLi,Medium,False,False
+2025-05-18,XSS,Critical,False,False
+2025-05-18,SQLi,High,True,True
+2025-05-18,DDoS,High,True,True
+2025-05-18,DDoS,High,False,False
+2025-05-18,Credential Stuffing,Critical,True,True
+2025-05-18,XSS,High,True,False
+2025-05-18,XSS,Critical,True,False
+2025-05-18,Credential Stuffing,Medium,False,False
+2025-05-18,DDoS,Low,True,False
+2025-05-18,Phishing,Low,False,False
+2025-05-18,SQLi,High,False,False
+2025-05-17,DDoS,Critical,True,True
+2025-05-17,Credential Stuffing,High,True,False
+2025-05-17,Ransomware,Low,True,False
+2025-05-17,SQLi,High,False,False
+2025-05-17,Credential Stuffing,Low,True,False
+2025-05-17,XSS,High,True,False
+2025-05-17,DDoS,High,True,False
+2025-05-17,Phishing,Critical,True,True
+2025-05-17,SQLi,High,True,False
+2025-05-17,SQLi,High,True,False
+2025-05-17,Credential Stuffing,Low,True,False
+2025-05-17,Credential Stuffing,High,True,True
+2025-05-17,SQLi,Medium,False,False
+2025-05-17,Credential Stuffing,Medium,False,False
+2025-05-16,XSS,Medium,False,False
+2025-05-16,Credential Stuffing,High,True,True
+2025-05-16,Phishing,High,False,False
+2025-05-16,DDoS,Low,True,True
+2025-05-16,Ransomware,Critical,False,False
+2025-05-16,DDoS,Medium,True,True
+2025-05-16,Phishing,Low,True,False
+2025-05-16,Credential Stuffing,Low,True,False
+2025-05-16,DDoS,Low,False,False
+2025-05-16,Ransomware,Critical,False,False
+2025-05-16,Phishing,Low,False,False
+2025-05-16,Malware,Critical,False,False
+2025-05-16,Ransomware,Low,True,True
+2025-05-16,Phishing,High,False,False
+2025-05-15,Ransomware,Critical,False,False
+2025-05-15,Phishing,Critical,False,False
+2025-05-15,SQLi,Medium,False,False
+2025-05-15,Malware,Critical,False,False
+2025-05-15,SQLi,Critical,True,True
+2025-05-15,XSS,Medium,True,False
+2025-05-15,SQLi,Critical,False,False
+2025-05-15,Malware,Medium,False,False
+2025-05-15,Ransomware,Low,True,False
+2025-05-15,Malware,Low,False,False
+2025-05-14,SQLi,High,False,False
+2025-05-14,Phishing,Critical,False,False
+2025-05-14,DDoS,Medium,True,True
+2025-05-14,Ransomware,Low,False,False
+2025-05-14,XSS,High,False,False
+2025-05-14,Credential Stuffing,High,True,False
+2025-05-13,SQLi,Medium,False,False
+2025-05-13,Malware,Critical,True,False
+2025-05-13,Credential Stuffing,Low,False,False
+2025-05-13,DDoS,Critical,False,False
+2025-05-13,XSS,Medium,True,True
+2025-05-13,DDoS,Low,True,True
+2025-05-13,XSS,High,True,True
+2025-05-13,Credential Stuffing,Medium,False,False
+2025-05-13,Phishing,Critical,True,True
+2025-05-12,SQLi,Low,True,True
+2025-05-12,Malware,Low,True,True
+2025-05-12,Malware,Low,True,True
+2025-05-12,SQLi,High,False,False
+2025-05-12,Malware,High,True,False
+2025-05-12,XSS,Low,True,True
+2025-05-12,Malware,Critical,False,False
+2025-05-12,SQLi,Medium,False,False
+2025-05-12,Malware,Medium,True,False
+2025-05-12,DDoS,High,False,False
+2025-05-12,Credential Stuffing,Low,True,True
+2025-05-12,Ransomware,Critical,True,False
+2025-05-12,Malware,Medium,True,True
+2025-05-12,Credential Stuffing,Critical,False,False
+2025-05-11,XSS,High,True,True
+2025-05-11,XSS,Medium,True,False
+2025-05-11,DDoS,Low,True,True
+2025-05-11,Ransomware,High,True,True
+2025-05-11,DDoS,Low,True,True
+2025-05-11,XSS,High,False,False
+2025-05-11,Malware,High,False,False
+2025-05-11,SQLi,Critical,True,False
+2025-05-11,DDoS,Low,False,False
+2025-05-11,Ransomware,High,False,False
+2025-05-10,SQLi,Critical,False,False
+2025-05-10,Credential Stuffing,Medium,True,True
+2025-05-10,SQLi,Critical,True,False
+2025-05-10,Ransomware,Medium,False,False
+2025-05-10,Malware,Low,False,False
+2025-05-10,Phishing,Low,False,False
+2025-05-10,Ransomware,Low,False,False
+2025-05-10,XSS,Medium,True,True
+2025-05-10,XSS,Critical,False,False
+2025-05-10,SQLi,Medium,False,False
+2025-05-09,Phishing,Medium,True,True
+2025-05-09,DDoS,Critical,False,False
+2025-05-09,XSS,Low,True,True
+2025-05-09,Malware,Medium,True,False
+2025-05-09,DDoS,Critical,True,True
+2025-05-09,Phishing,High,True,True
+2025-05-08,Malware,Low,False,False
+2025-05-08,XSS,Medium,True,True
+2025-05-08,Ransomware,Medium,True,True
+2025-05-08,XSS,Medium,True,False
+2025-05-08,DDoS,Critical,True,False
+2025-05-08,XSS,High,True,True
+2025-05-08,Credential Stuffing,High,False,False
+2025-05-08,Phishing,Critical,False,False
+2025-05-07,DDoS,High,True,False
+2025-05-07,Malware,Critical,True,True
+2025-05-07,Phishing,Medium,False,False
+2025-05-07,XSS,Low,False,False
+2025-05-07,DDoS,High,False,False
+2025-05-07,DDoS,Low,True,False
+2025-05-07,Ransomware,Low,True,True
+2025-05-07,DDoS,Medium,True,True
+2025-05-07,Malware,High,True,True
+2025-05-07,SQLi,Critical,True,True
+2025-05-07,DDoS,Medium,True,True
+2025-05-06,Phishing,Medium,True,False
+2025-05-06,XSS,Medium,False,False
+2025-05-06,Phishing,Critical,False,False
+2025-05-06,DDoS,Low,True,True
+2025-05-06,Ransomware,Medium,False,False
+2025-05-05,Phishing,Medium,True,False
+2025-05-05,Ransomware,Medium,False,False
+2025-05-05,Ransomware,Medium,True,False
+2025-05-05,Credential Stuffing,Critical,False,False
+2025-05-05,Malware,Critical,True,True
+2025-05-05,Ransomware,Medium,False,False
+2025-05-05,XSS,Medium,False,False
+2025-05-05,SQLi,High,False,False
+2025-05-05,Phishing,Low,False,False
+2025-05-04,Phishing,High,True,False
+2025-05-04,Phishing,Low,True,False
+2025-05-04,SQLi,Low,False,False
+2025-05-04,DDoS,Critical,True,True
+2025-05-04,XSS,Low,True,False
+2025-05-04,Malware,Low,False,False
+2025-05-04,Credential Stuffing,Critical,True,False
+2025-05-04,DDoS,High,True,True
+2025-05-04,Malware,Medium,True,True
+2025-05-04,DDoS,Medium,True,True
+2025-05-04,Ransomware,Critical,True,False
+2025-05-04,Phishing,Low,False,False
+2025-05-04,DDoS,Low,True,False
+2025-05-03,Ransomware,Low,False,False
+2025-05-03,Malware,Critical,True,False
+2025-05-03,Phishing,Critical,True,False
+2025-05-03,DDoS,Low,True,False
+2025-05-03,Ransomware,High,False,False
+2025-05-03,Malware,High,True,True
+2025-05-02,Ransomware,High,True,True
+2025-05-02,Phishing,High,True,False
+2025-05-02,Malware,Critical,True,False
+2025-05-02,Ransomware,Low,False,False
+2025-05-02,XSS,Low,False,False
+2025-05-02,Phishing,High,True,False
+2025-05-02,DDoS,High,True,False
+2025-05-02,Phishing,Low,True,False
+2025-05-02,SQLi,High,True,False
+2025-05-02,XSS,Low,False,False
+2025-05-02,Malware,Medium,True,True
+2025-05-02,SQLi,Critical,False,False
+2025-05-02,Phishing,Medium,False,False
+2025-05-01,XSS,High,False,False
+2025-05-01,SQLi,High,False,False
+2025-05-01,XSS,Medium,True,True
+2025-05-01,Credential Stuffing,Low,False,False
+2025-05-01,Malware,Critical,False,False
+2025-05-01,Phishing,High,False,False
+2025-05-01,Credential Stuffing,Critical,False,False
+2025-04-30,Phishing,High,False,False
+2025-04-30,DDoS,Critical,False,False
+2025-04-30,Ransomware,Medium,False,False
+2025-04-30,XSS,Medium,False,False
+2025-04-30,Malware,Medium,False,False
+2025-04-30,Phishing,Critical,False,False
+2025-04-30,XSS,High,True,True
+2025-04-30,Credential Stuffing,Medium,True,True
+2025-04-30,DDoS,Critical,False,False
+2025-04-29,SQLi,Critical,False,False
+2025-04-29,Ransomware,High,False,False
+2025-04-29,Phishing,Critical,True,False
+2025-04-29,DDoS,Low,False,False
+2025-04-29,Malware,High,True,False
+2025-04-29,Malware,Medium,False,False
+2025-04-29,Malware,Medium,False,False
+2025-04-29,XSS,Medium,True,True
+2025-04-29,XSS,High,False,False
+2025-04-29,Credential Stuffing,Low,True,True
+2025-04-29,Credential Stuffing,Medium,False,False
+2025-04-29,SQLi,Critical,False,False
+2025-04-29,Credential Stuffing,Medium,True,True
+2025-04-28,XSS,Critical,False,False
+2025-04-28,Malware,Low,True,True
+2025-04-28,XSS,High,True,True
+2025-04-28,DDoS,Critical,False,False
+2025-04-28,Phishing,Critical,True,False
+2025-04-28,DDoS,Critical,True,True
+2025-04-28,SQLi,Low,True,False
+2025-04-28,Phishing,High,False,False
+2025-04-28,Ransomware,High,True,False
+2025-04-28,SQLi,High,True,False
+2025-04-28,DDoS,Critical,True,False
+2025-04-28,SQLi,Low,False,False
+2025-04-28,Malware,Medium,True,True
+2025-04-28,Ransomware,Medium,True,False
+2025-04-28,Phishing,High,False,False
+2025-04-27,Malware,High,False,False
+2025-04-27,Credential Stuffing,Medium,True,False
+2025-04-27,XSS,Medium,True,True
+2025-04-27,Malware,Low,True,False
+2025-04-27,SQLi,Critical,True,False
+2025-04-27,Credential Stuffing,Critical,False,False
+2025-04-27,SQLi,Low,True,True
+2025-04-27,Ransomware,High,True,False
+2025-04-27,DDoS,Low,True,True
+2025-04-27,DDoS,High,True,True
+2025-04-27,Ransomware,Medium,True,True
+2025-04-26,DDoS,Low,True,True
+2025-04-26,Phishing,Low,False,False
+2025-04-26,Phishing,High,True,False
+2025-04-26,DDoS,Critical,False,False
+2025-04-26,Malware,Critical,False,False
+2025-04-26,DDoS,High,False,False
+2025-04-26,SQLi,Medium,False,False
+2025-04-26,DDoS,Medium,True,False
+2025-04-26,SQLi,Medium,False,False
+2025-04-26,SQLi,Medium,True,True
+2025-04-26,Credential Stuffing,Medium,False,False
+2025-04-26,Malware,Critical,False,False
+2025-04-26,Credential Stuffing,Critical,False,False
+2025-04-26,XSS,Medium,False,False
+2025-04-25,XSS,High,True,True
+2025-04-25,Credential Stuffing,Critical,False,False
+2025-04-25,Phishing,Medium,True,True
+2025-04-25,SQLi,High,True,False
+2025-04-25,Phishing,High,False,False
+2025-04-25,Phishing,Critical,False,False
+2025-04-25,Phishing,Low,True,False
+2025-04-25,DDoS,High,False,False
+2025-04-24,Malware,High,True,False
+2025-04-24,SQLi,Critical,False,False
+2025-04-24,Phishing,Medium,False,False
+2025-04-24,DDoS,Critical,False,False
+2025-04-24,SQLi,High,True,True
+2025-04-24,Phishing,High,False,False
+2025-04-24,Phishing,Medium,True,True
+2025-04-24,Credential Stuffing,Medium,True,True
+2025-04-24,Phishing,Medium,False,False
+2025-04-24,Malware,High,False,False
+2025-04-24,Credential Stuffing,Medium,False,False
+2025-04-24,DDoS,Medium,False,False
+2025-04-24,Ransomware,High,False,False
+2025-04-23,XSS,Medium,False,False
+2025-04-23,SQLi,Critical,True,True
+2025-04-23,Ransomware,Medium,True,False
+2025-04-23,SQLi,High,False,False
+2025-04-23,Credential Stuffing,Medium,True,True
+2025-04-23,Phishing,High,True,True
+2025-04-23,Phishing,Low,False,False
+2025-04-23,Credential Stuffing,High,True,True
+2025-04-23,DDoS,Critical,True,True
+2025-04-23,Ransomware,Low,True,False
+2025-04-22,DDoS,Critical,True,False
+2025-04-22,Ransomware,Medium,False,False
+2025-04-22,DDoS,Medium,True,True
+2025-04-22,Credential Stuffing,High,False,False
+2025-04-22,Ransomware,Low,False,False
+2025-04-22,Ransomware,Critical,False,False
+2025-04-22,Phishing,Critical,False,False
+2025-04-22,Phishing,Low,True,True
+2025-04-22,Credential Stuffing,Critical,True,True
+2025-04-22,Phishing,Medium,True,True
+2025-04-22,SQLi,Critical,False,False
+2025-04-22,Malware,Critical,False,False
+2025-04-22,Ransomware,Low,False,False

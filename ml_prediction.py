@@ -12,8 +12,8 @@ import io
 from datetime import datetime, timedelta
 import random
 
-def generate_sample_ttp_data():
-    """Generate sample TTP data for machine learning prediction"""
+def generate_reference_ttp_data():
+    """Generate reference TTP data for machine learning prediction"""
     # MITRE ATT&CK techniques
     techniques = [
         {"id": "T1566", "name": "Phishing"},
@@ -75,8 +75,7 @@ def generate_sample_ttp_data():
     df = pd.DataFrame(data)
     
     # Save the generated data
-    df.to_csv("sample_data/threat_telemetry.csv", index=False)
-    
+    df.to_csv("data_resources/threat_telemetry.csv", index=False)
     return df
 
 def train_ttp_prediction_model(df):
@@ -193,12 +192,13 @@ def predict_emerging_ttps(model_data, threat_actor, industry, future_months=3):
 
 def predict_ttps_in_mitre_attack():
     """Make TTP predictions based on MITRE ATT&CK data"""
-    # Try to load the sample data
+    # Try to load the reference data
     try:
-        df = pd.read_csv("sample_data/threat_telemetry.csv")
+        # Load the CSV file
+        df = pd.read_csv("data_resources/threat_telemetry.csv")
     except:
-        # Generate sample data if not available
-        df = generate_sample_ttp_data()
+        # Generate reference data if not available
+        df = generate_reference_ttp_data()
     
     # Train the model
     model_data = train_ttp_prediction_model(df)
@@ -252,7 +252,7 @@ def predict_ttps_in_mitre_attack():
                     height=500
                 )
                 
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, use_container_width=True, key="ml_prediction_fig1")
                 
                 # Show detailed table
                 st.dataframe(predictions)
@@ -355,4 +355,4 @@ def predict_ttps_in_mitre_attack():
                 title="Feature Importance",
                 height=300
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=True, key="ml_prediction_fig2")

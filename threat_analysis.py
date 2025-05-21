@@ -153,13 +153,13 @@ def show_extraction_results(extracted_data):
     if ttps:
         ttp_df = pd.DataFrame([{ "ID": k, "Name": v } for k, v in ttps.items()])
         st.dataframe(ttp_df)
-        st.plotly_chart(px.bar(ttp_df, x="ID", y=ttp_df.index, title="MITRE ATT&CK Techniques Identified"), use_container_width=True)
+        st.plotly_chart(px.bar(ttp_df, x="ID", y=ttp_df.index, title="MITRE ATT&CK Techniques Identified"), use_container_width=True, key="ttp_bar_chart")
     else:
         st.info("No MITRE ATT&CK techniques identified.")
 
-def generate_sample_json_report():
-    """Generate a sample threat report in JSON format"""
-    sample_report = {
+def generate_reference_json_report():
+    """Generate a reference threat report in JSON format"""
+    reference_report = {
         "report_title": "Threat Intelligence Report: APT41 Campaign",
         "report_date": datetime.now().strftime("%Y-%m-%d"),
         "threat_actor": "APT41",
@@ -193,8 +193,7 @@ def generate_sample_json_report():
             {"id": "T1078", "name": "Valid Accounts", "description": "The threat actor used compromised credentials to maintain access."},
         ],
     }
-
-    return json.dumps(sample_report, indent=2)
+    return json.dumps(reference_report, indent=2)
 
 def show_threat_analysis():
     """Display the threat analysis page"""
@@ -208,7 +207,7 @@ def show_threat_analysis():
     )
 
     # Create tabs for different input methods
-    upload_tab, web_tab, sample_tab = st.tabs(["Upload Threat Report", "Web Scraping", "Use Sample Report"])
+    upload_tab, web_tab, reference_tab = st.tabs(["Upload Threat Report", "Web Scraping", "Use Reference Report"])
 
     with upload_tab:
         uploaded_file = st.file_uploader("Upload a JSON or PDF threat report", type=["json", "pdf"])
@@ -276,15 +275,12 @@ def show_threat_analysis():
             else:
                 st.warning("Please enter a valid URL.")
 
-    with sample_tab:
-        st.info("Using a sample threat report for demonstration purposes")
-
-        sample_json = generate_sample_json_report()
-
-        if st.button("Process Sample Report"):
-            with st.spinner("Processing sample report..."):
-                result = process_json_threat_report(sample_json)
-
+    with reference_tab:
+        st.info("Using a reference threat report for validation and review.")
+        reference_json = generate_reference_json_report()
+        if st.button("Process Reference Report"):
+            with st.spinner("Processing reference report..."):
+                result = process_json_threat_report(reference_json)
                 if result:
-                    st.success("Successfully processed sample report")
+                    st.success("Successfully processed reference report")
                     show_extraction_results(result)
