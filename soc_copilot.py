@@ -2,8 +2,9 @@ import streamlit as st
 import pandas as pd
 import json
 import re
+import os
 from datetime import datetime
-import random
+from live_data_fetcher import fetch_virustotal_data
 from threat_analysis import load_nlp_model, extract_iocs_from_text, extract_ttps_from_text
 from mitre_attack import load_mitre_attack_data
 
@@ -117,6 +118,28 @@ def load_threat_knowledge_base():
         "malware": malware_profiles
     }
 
+def load_profiles(profile_path="data_resources/threat_profiles.json"):
+    if os.path.exists(profile_path):
+        with open(profile_path, "r") as f:
+            return json.load(f)
+    return {"actors": {}, "malware": {}}
+
+def extract_iocs(text):
+    # Simple regexes for IP, domain, hash
+    ip_re = r"\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b"
+    domain_re = r"\b([a-zA-Z0-9-]+\.[a-zA-Z]{2,})\b"
+    hash_re = r"\b[a-fA-F0-9]{32,64}\b"
+    ips = re.findall(ip_re, text)
+    domains = [d for d in re.findall(domain_re, text) if not d[0].isdigit()]
+    hashes = re.findall(hash_re, text)
+    return {"ips": ips, "domains": domains, "hashes": hashes}
+
+def enrich_ioc(ioc, vt_api_key):
+    # Only call VT if key is set
+    if not vt_api_key:
+        return None
+    return fetch_virustotal_data(vt_api_key, ioc)
+
 def process_analyst_query(query, knowledge_base):
     """
     Process an analyst query and provide relevant threat intelligence.
@@ -160,54 +183,39 @@ def process_analyst_query(query, knowledge_base):
     
     return response
 
-def generate_copilot_response(query, iocs, ttps, actors, malware, knowledge_base):
-    """
-    Generate a natural language response to the analyst's query.
-    
-    Args:
-        query: The analyst's query
-        iocs: Extracted IOCs
-        ttps: Extracted TTPs
-        actors: Mentioned threat actors
-        malware: Mentioned malware
-        knowledge_base: The threat intelligence knowledge base
-        
-    Returns:
-        String containing the response text
-    """
-    try:
-        response_parts = []
-        
-        # Check if this is a general information query
-        if "what is" in query.lower() or "tell me about" in query.lower() or "information on" in query.lower():
-            # Handle TTP information queries
-            for ttp_id in ttps:
-                if ttp_id in knowledge_base["techniques"]:
-                    technique = knowledge_base["techniques"][ttp_id]
-                    tactic = knowledge_base["tactics"].get(technique["tactic_id"], {"name": "Unknown Tactic"})
-                    
-                    response_parts.append(f"### Information on {ttp_id}: {technique['name']}")
-                    response_parts.append(f"**Tactic:** {tactic['name']} ({technique['tactic_id']})")
-                    response_parts.append(f"**Description:** {technique['description']}")
-                    response_parts.append(f"**MITRE ATT&CK URL:** https://attack.mitre.org/techniques/{ttp_id.replace('.', '/')}/")
-                    
-                    # Add some common detection/mitigation advice
-                    response_parts.append("**Common Detection Methods:**")
-                    response_parts.append("- Monitor for suspicious process execution")
-                    response_parts.append("- Analyze network traffic patterns")
-                    response_parts.append("- Review authentication logs for anomalies")
-                    
-                    response_parts.append("**Common Mitigation Strategies:**")
-                    response_parts.append("- Implement application control")
-                    response_parts.append("- Deploy multi-factor authentication")
-                    response_parts.append("- Restrict administrative privileges")
-                
-        # Combine the response parts
-        return "\n\n".join(response_parts)
-    except KeyError as e:
-        return f"Error: Missing key in knowledge base - {str(e)}"
-    except Exception as e:
-        return f"An unexpected error occurred: {str(e)}"
+def generate_copilot_response(query, profiles, vt_api_key):
+    # 1. Threat actor/malware profile lookup
+    matched_profiles = []
+    q_lower = query.lower()
+    for name, profile in profiles.get("actors", {}).items():
+        if name.lower() in q_lower:
+            matched_profiles.append(("Threat Actor", name, profile))
+    for name, profile in profiles.get("malware", {}).items():
+        if name.lower() in q_lower:
+            matched_profiles.append(("Malware", name, profile))
+    # 2. IOC extraction and enrichment
+    iocs = extract_iocs(query)
+    ioc_analysis = []
+    for ioc_type in ["ips", "domains", "hashes"]:
+        for ioc in iocs[ioc_type]:
+            vt_result = enrich_ioc(ioc, vt_api_key)
+            ioc_analysis.append({"type": ioc_type[:-1], "value": ioc, "vt": vt_result})
+    # 3. Format response
+    response = []
+    if matched_profiles:
+        response.append("### Threat Profile(s)\n")
+        for ptype, name, profile in matched_profiles:
+            response.append(f"**{ptype}: {name}**\n" + "\n".join([f"- {k}: {v}" for k, v in profile.items()]))
+    if ioc_analysis:
+        response.append("\n### IOC Analysis\n")
+        for ioc in ioc_analysis:
+            vt = ioc["vt"]
+            vt_summary = f" (VirusTotal: {vt['data']['attributes']['last_analysis_stats']} )" if vt and vt.get('data') else " (No VT data)"
+            response.append(f"- {ioc['type'].upper()}: {ioc['value']}{vt_summary}")
+    if not matched_profiles and not ioc_analysis:
+        response.append("No threat profile or IOC found. Please rephrase or provide more details.")
+    response.append("\n### Recommendation\n- Review the above context and investigate further as needed.")
+    return "\n".join(response)
 
 def show_chat_history(chat_history):
     """
@@ -239,6 +247,10 @@ def show_soc_copilot():
     # Initialize the knowledge base in session state if it doesn't exist
     if "soc_knowledge_base" not in st.session_state:
         st.session_state.soc_knowledge_base = load_threat_knowledge_base()
+    
+    # Securely load VT API key (from env or config, not UI)
+    vt_api_key = os.environ.get("VT_API_KEY")
+    profiles = load_profiles()
     
     # Create tabs for different interaction modes
     chat_tab, queries_tab, debug_tab = st.tabs(["Chat Interface", "Example Queries", "Knowledge Base"])
