@@ -238,7 +238,7 @@ def show_threat_analysis():
         """
         )
 
-        url = st.text_input("Enter website URL", placeholder="https://example.com/threat-report")
+        url = st.text_input("Enter website URL")
 
         if st.button("Extract Intelligence from Website"):
             if url:

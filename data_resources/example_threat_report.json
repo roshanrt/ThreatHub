@@ -1,0 +1,45 @@
+{
+  "report_id": "TR-2025-001",
+  "title": "Advanced Persistent Threat Activity Detected",
+  "date": "2025-05-22",
+  "summary": "This report details the detection and analysis of a sophisticated cyber attack campaign targeting enterprise infrastructure. The activity is attributed to an advanced persistent threat (APT) group leveraging multiple MITRE ATT&CK techniques.",
+  "indicators": [
+    {
+      "type": "ip",
+      "value": "192.0.2.10",
+      "description": "Command and control server"
+    },
+    {
+      "type": "domain",
+      "value": "malicious.example.com",
+      "description": "Phishing domain used in initial access"
+    }
+  ],
+  "tactics": [
+    {
+      "tactic_id": "TA0001",
+      "tactic_name": "Initial Access"
+    },
+    {
+      "tactic_id": "TA0002",
+      "tactic_name": "Execution"
+    }
+  ],
+  "techniques": [
+    {
+      "technique_id": "T1566",
+      "technique_name": "Phishing",
+      "tactic_id": "TA0001"
+    },
+    {
+      "technique_id": "T1059",
+      "technique_name": "Command and Scripting Interpreter",
+      "tactic_id": "TA0002"
+    }
+  ],
+  "recommendations": [
+    "Implement email filtering and user awareness training.",
+    "Monitor for suspicious scripting activity.",
+    "Block known malicious IPs and domains."
+  ]
+}

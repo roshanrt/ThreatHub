@@ -313,7 +313,22 @@ def populate_threat_intel_feed():
         "https://sslbl.abuse.ch/blacklist/sslipblacklist.csv",
         "https://sslbl.abuse.ch/blacklist/dyre_sslipblacklist.csv",
         "https://urlhaus.abuse.ch/downloads/csv/",
-        "http://vxvault.net/URL_List.php"
+        "http://vxvault.net/URL_List.php",
+        "https://www.circl.lu/doc/misp/feed-osint/",
+        "https://www.botvrij.eu/data/feed-osint/",
+        "https://rules.emergingthreats.net/blockrules/compromised-ips.txt",
+        "https://feodotracker.abuse.ch/downloads/ipblocklist.csv",
+        "https://openphish.com/feed.txt",
+        "https://sslbl.abuse.ch/blacklist/sslipblacklist.csv",
+        "https://osint.digitalside.it/Threat-Intel/digitalside-misp-feed/",
+        "https://iplists.firehol.org/",
+        "https://otx.alienvault.com/",
+        "https://phishunt.io/",
+        "https://github.com/ivolo/disposable-email-domains",
+        "https://github.com/dpup/freemail",
+        "https://www.abuseipdb.com/",
+        "https://www.stopforumspam.com/",
+        "https://www.dshield.org/xml.html"
     ]
 
     for source_url in osint_sources:
@@ -519,7 +534,7 @@ def show_threat_intel_management():
                     tags_input = st.text_input("Tags (comma-separated)", placeholder="e.g., ransomware, financial, APT29")
                     
                     # Optional reference URL
-                    reference_url = st.text_input("Reference URL", placeholder="https://example.com/threat-report")
+                    reference_url = st.text_input("Reference URL")
                     
                     submit_intel = st.form_submit_button("Add Intelligence Item")
                 

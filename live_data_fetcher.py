@@ -63,7 +63,7 @@ def get_combined_data(api_key, ioc, blog_url, db_path):
 def main():
     api_key = "9d14ebf0f380f6ee50dbd7cbb18c01305d88818f22925dca1b39e81ea8313b36"
     ioc = "203.0.113.25"  # Example IOC
-    blog_url = "https://example.com/threat-intelligence"
+    blog_url = "https://testblog.com/threat-intelligence"
     db_path = "data/cybershield.db"
 
     combined_data = get_combined_data(api_key, ioc, blog_url, db_path)

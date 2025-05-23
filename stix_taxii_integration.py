@@ -15,6 +15,12 @@ from pymongo import MongoClient
 import requests
 import csv
 
+# Add cabby for TAXII 1.x (AlienVault OTX)
+try:
+    from cabby import create_client
+except ImportError:
+    create_client = None
+
 def discover_taxii_server(url, version="2.1", username=None, password=None):
     """
     Discover available collections on a TAXII server
@@ -28,6 +34,35 @@ def discover_taxii_server(url, version="2.1", username=None, password=None):
     Returns:
         Dictionary with server info and available collections
     """
+    # AlienVault OTX special handling
+    if "otx.alienvault.com" in url and (version == "1.x" or version == "1"):
+        if create_client is None:
+            st.error("cabby library is required for AlienVault OTX TAXII 1.x support. Please install it with 'pip install cabby'.")
+            return None
+        try:
+            client = create_client(
+                'https://otx.alienvault.com/taxii/discovery',
+                use_https=True,
+                discovery_path='/taxii/discovery'
+            )
+            if not username:
+                st.error("You must provide your OTX API key as the username.")
+                return None
+            client.set_auth(username=username, password="")
+            collections = client.get_collections()
+            return {
+                "version": "1.x",
+                "title": "AlienVault OTX",
+                "description": "AlienVault OTX TAXII 1.x Collections",
+                "collections": [{
+                    "name": col.name,
+                    "type": col.type,
+                    "description": col.description
+                } for col in collections]
+            }
+        except Exception as e:
+            st.error(f"Error discovering AlienVault OTX TAXII collections: {str(e)}")
+            return None
     try:
         if version == "2.1":
             # TAXII 2.1
@@ -1250,7 +1285,7 @@ def show_stix_taxii_integration():
                 "Discovery URL", 
                 placeholder="e.g., https://cti-taxii.mitre.org/taxii/"
             )
-            server_version = st.selectbox("TAXII Version", ["2.1", "2.0"])
+            server_version = st.selectbox("TAXII Version", ["2.1", "2.0", "1.x"])
             
             # Optional authentication
             use_auth = st.checkbox("Server requires authentication")

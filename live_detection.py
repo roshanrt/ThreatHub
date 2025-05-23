@@ -308,7 +308,7 @@ def simulate_log_data(log_type="syslog", include_attacks=True):
                 ip = random.choice(ips)
             
             user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-            referer = "https://example.com/"
+            referer = "https://testreferer.com/"
             log_line = f'{ip} - - [{ts.replace(" ", "/")}] "{method} {path} HTTP/1.1" {status} {random.randint(100, 10000)} "{referer}" "{user_agent}"'
             log_lines.append(log_line)
     
